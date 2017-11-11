@@ -1,9 +1,10 @@
 // editor
 Editor = (() => {
     class Editor {
-        constructor (editor, model) {
-            this.editor = editor
-            this.model = model
+        constructor (socket, editor, model) {
+            this.editor = editor;
+            this.model = model;
+            this.socket = socket;
         }
 
         insertLine (number, text) {
@@ -28,44 +29,46 @@ Editor = (() => {
         }
     }
 
-    const editor = new Editor()
+     $.getScript('/js/sio.js', function () { 
+        const SIO = initSIO();
+        const editor = new Editor(SIO.socket);
 
-    require.config({ paths: { 'vs': '/node_modules/monaco-editor/min/vs' }})
+        require.config({ paths: { 'vs': '/node_modules/monaco-editor/min/vs' }})
 
-    require(['vs/editor/editor.main'], async () => {
-        const file = await fetch('/index.html')
-        const content = await file.text()
+        require(['vs/editor/editor.main'], async () => {
+            editor.socket.on("file", function (fileContent) {
+                // initialize monaco editor
+                const m = monaco.editor.createModel(fileContent, 'html')
+                const e = monaco.editor.create(
+                    document.getElementById('container'),
+                    { model: m }
+                )
 
-        // initialize monaco editor
-        const m = monaco.editor.createModel(content, 'html')
-        const e = monaco.editor.create(
-            document.getElementById('container'),
-            { model: m }
-        )
+                // set up global editor
+                editor.model = m
+                editor.editor = e
+            })
+        })
 
-        // set up global editor
-        editor.model = m
-        editor.editor = e
-    })
+        // highlight line
+        // setTimeout(() => {
+        //     if (!Editor.editor) return
 
-    // highlight line
-    // setTimeout(() => {
-    //     if (!Editor.editor) return
+        //     var newDecorations = []
 
-    //     var newDecorations = []
+        //     ranges.forEach(([ startLine, endLine ]) => {
+        //         console.log('new changes!!!')
+        //         var oldDecorations = editor.deltaDecorations(newDecorations, [{
+        //             range: new monaco.Range(startLine,1,endLine,1),
+        //             options: {
+        //                 isWholeLine: true,
+        //                 className: 'newChanges',
+        //                 // glyphMarginClassName: 'myGlyphMarginClass'
+        //             }
+        //         }])
+        //     })
+        // }, 2000)
 
-    //     ranges.forEach(([ startLine, endLine ]) => {
-    //         console.log('new changes!!!')
-    //         var oldDecorations = editor.deltaDecorations(newDecorations, [{
-    //             range: new monaco.Range(startLine,1,endLine,1),
-    //             options: {
-    //                 isWholeLine: true,
-    //                 className: 'newChanges',
-    //                 // glyphMarginClassName: 'myGlyphMarginClass'
-    //             }
-    //         }])
-    //     })
-    // }, 2000)
-
-    return editor
+        return editor
+     })
 })()

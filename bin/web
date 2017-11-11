@@ -17,11 +17,12 @@ async function start () {
     const connectedSockets = {}
     
     let version = 0
-    io.on('connection', socket => {
-        if (!connectedSockets[socket.id]) {
+    io.on('connection', async socket => {
             console.log(`${socket.id} connected`)
             connectedSockets[socket.id] = socket
-        }
+            const file = await db.readFile()
+            console.log(`Emiting file ${JSON.stringify(file)}`)
+            io.to(socket.id).emit("file", file)
     
         socket.on('commit', async data => {
             version++
