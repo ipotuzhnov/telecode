@@ -7,7 +7,7 @@ const socket = require('socket.io-client')(url)
 console.log(`attempting to connect to ${url}`)
 socket.on('connect', () => {
     console.log('connected')
-    sync.watch(process.cwd())
+    sync.watch(process.cwd(), `/tmp/nodeist-${Date.now()}`)
 })
 
 socket.on('update', data => {
