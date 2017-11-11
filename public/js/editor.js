@@ -29,14 +29,15 @@ Editor = (() => {
         }
     }
 
-     $.getScript('/js/sio.js', function () { 
+    $.getScript('/js/sio.js', function () { 
         const SIO = initSIO();
         const editor = new Editor(SIO.socket);
 
         require.config({ paths: { 'vs': '/node_modules/monaco-editor/min/vs' }})
 
         require(['vs/editor/editor.main'], async () => {
-            editor.socket.on("file", function (fileContent) {
+            editor.socket.emit("retrieve_file", {}, function (err, fileContent) {
+                if (err) throw err
                 // initialize monaco editor
                 const m = monaco.editor.createModel(fileContent, 'html')
                 const e = monaco.editor.create(
