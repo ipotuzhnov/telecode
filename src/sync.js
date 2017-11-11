@@ -4,25 +4,32 @@ const util     = require('util')
 const path     = require('path')
 const exec     = util.promisify(require('child_process').exec)
 module.exports = {
-    async onChange (dir, dbdir, changeType, absPath, newStat, oldStat) {
-        try {
-            const relPath = path.relative(dir, absPath)
-            console.log(relPath + ' changed')
-            console.log('running', `diff ${dir}/${relPath} ${dbdir}/${relPath}`)
-            const diff = (await exec(`diff ${dir}/${relPath} ${dbdir}/${relPath} ; exit 0`)).stdout
-            console.log('the diff:')
-            console.log(diff)
-        } catch (e) {
-            console.error('there was an error', e)
-        }
+    // Inits a git repo in the given directory
+    async initRepo (repoDir, origin) {
+        const cwd = repoDir
+        await exec(`mkdir -p ${repoDir}`)
+        return await exec(`git clone git://${origin}/master`, {cwd})
     },
-    async watch (dir, dbdir) {
-        await exec(`cp -r ${dir} ${dbdir}`)
-        console.log(`Watching path ${dir}`)
-        return await util.promisify(watchr.open)(dir, this.onChange.bind(this, dir, dbdir)).catch( err => {
-            if (err) {
-                console.err(`An error occurred watching ${dir}:`, err)
-            }
+
+    // Rsyncs a directory into the directory of a git repo, commits and pushes.
+    async syncDirToRepo (dir, repoDir) {
+        await exec(`rsync -r ${dir} ${repoDir}`)
+        const cwd = repoDir
+        await exec('git add .', {cwd})
+        const diff = (exec('git diff', {cwd})).stdout
+        await exec(`git commit -m ${Date.now()}`, {cwd})
+        await exec('git push')
+        return diff
+    },
+
+    async watch (dir, repoDir, origin, onChange) {
+        await this.initRepo(repoDir, origin)
+        return await util.promisify(watchr.open)(dir, async (changeType, absPath, newStat, oldStat) => {
+            return await this.syncDirToRepo(dir, repoDir)
         })
+    },
+
+    async unwatch (dbdir) {
+        return await exec(`rm -r ${dbdir}`)
     }
 }
