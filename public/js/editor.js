@@ -22,15 +22,16 @@ Editor = (() => {
 
     require.config({ paths: { 'vs': '/node_modules/monaco-editor/min/vs' }})
 
-    require(['vs/editor/editor.main'], () => {
-        fetch("/index.html")
-            .then(res => res.text())
-            .then(body => {
-                Editor.editor = monaco.editor.create(document.getElementById('container'), {
-                    value: body,
-                    language: 'javascript'
-                })
-            })
+    require(['vs/editor/editor.main'], async () => {
+        const file = await fetch("/index.html")
+        const content = await file.text()
+
+        Editor.model = monaco.editor.createModel(content, 'html')
+
+        Editor.editor = monaco.editor.create(
+            document.getElementById('container'),
+            { model: Editor.model }
+        )
     })
 
     return Editor
