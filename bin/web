@@ -11,7 +11,7 @@ const connectedSockets = {}
 let version = 0
 io.on('connection', socket => {
     if (!connectedSockets[socket.id]) {
-        console.log('a user with id ' + socket.id + ' connected')
+        console.log(`${socket.id} connected`)
         connectedSockets[socket.id] = socket
     }
 
@@ -19,7 +19,7 @@ io.on('connection', socket => {
         version++
         const authorId = socket.id
         io.emit('update', {authorId, version, data})
-        console.log(`received data: authorId=${authorId}, version=${version}, data=${data}`)
+        console.log(`received data: authorId=${authorId}, version=${version}, data=${JSON.stringify(data)}`)
     })
 })
 
