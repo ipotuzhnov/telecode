@@ -1,31 +1,46 @@
 #!/usr/bin/env node
 
 'use strict'
-const express = require('express')
-const app     = express()
-const http    = require('http').Server(app)
-const io      = require('socket.io')(http)
+const express   = require('express')
+const app       = express()
+const http      = require('http').Server(app)
+const io        = require('socket.io')(http)
+const path      = require('path')
+const DB        = require('../src/db')
 
-const connectedSockets = {}
+const DIR = path.resolve(process.env.DIR || `/tmp/nodeist-colony-${Date.now()}`)
 
-let version = 0
-io.on('connection', socket => {
-    if (!connectedSockets[socket.id]) {
-        console.log(`${socket.id} connected`)
-        connectedSockets[socket.id] = socket
-    }
-
-    socket.on('commit', data => {
-        version++
-        const authorId = socket.id
-        io.emit('update', {authorId, version, data})
-        console.log(`received data: authorId=${authorId}, version=${version}, data=${JSON.stringify(data)}`)
+async function start () {
+    const db = DB(DIR)
+    console.log(`Initializing database in directory ${DIR}`)
+    await db.init()
+    const connectedSockets = {}
+    
+    let version = 0
+    io.on('connection', socket => {
+        if (!connectedSockets[socket.id]) {
+            console.log(`${socket.id} connected`)
+            connectedSockets[socket.id] = socket
+        }
+    
+        socket.on('commit', async data => {
+            version++
+            const authorId = socket.id
+            await db.update(data)
+            io.emit('update', {authorId, version, data})
+            console.log(`received data: authorId=${authorId}, version=${version}, data=${JSON.stringify(data)}`)
+        })
     })
-})
+    
+    app.use(express.static('public'))
+    app.use('/node_modules', express.static('node_modules'))
+    
+    const PORT = process.env.PORT || 5000
+    
+    http.listen(PORT, () => console.log(`Listening on ${PORT}`))
+}
 
-app.use(express.static('public'))
-app.use('/node_modules', express.static('node_modules'))
-
-const PORT = process.env.PORT || 5000
-
-http.listen(PORT, () => console.log(`Listening on ${PORT}`))
+start()
+    .catch(e => {
+        console.error(e)
+    })
