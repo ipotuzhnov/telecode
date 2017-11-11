@@ -1,6 +1,34 @@
 // editor
 Editor = (() => {
-    const Editor = { editor: null }
+    class Editor {
+        constructor (editor, model) {
+            this.editor = editor
+            this.model = model
+        }
+
+        insertLine (number, text) {
+            this.model.applyEdits([{ range: new monaco.Range(
+                number, 1,
+                number, 1
+            ), text: text + '\n' }])
+        }
+
+        replaceLine (number, text) {
+            this.model.applyEdits([{ range: new monaco.Range(
+                number, 1,
+                number + 1, 1
+            ), text: text + '\n' }])
+        }
+
+        removeLine (number) {
+            this.model.applyEdits([{ range: new monaco.Range(
+                number, 1,
+                number + 1, 1
+            ), text: '' }])
+        }
+    }
+
+    const editor = new Editor()
 
     require.config({ paths: { 'vs': '/node_modules/monaco-editor/min/vs' }})
 
@@ -8,42 +36,16 @@ Editor = (() => {
         const file = await fetch('/index.html')
         const content = await file.text()
 
-        const model = monaco.editor.createModel(content, 'html')
-        Editor.model = model
-
-        const editor = monaco.editor.create(
+        // initialize monaco editor
+        const m = monaco.editor.createModel(content, 'html')
+        const e = monaco.editor.create(
             document.getElementById('container'),
-            { model: Editor.model }
+            { model: m }
         )
-        Editor.editor = editor
 
-
-        // insert line
-        function insertLine (number, text) {
-            model.applyEdits([{ range: new monaco.Range(
-                number, 1,
-                number, 1
-            ), text: text + '\n' }])
-        }
-        Editor.insertLine = insertLine
-
-        // replace line
-        function replaceLine (number, text) {
-            model.applyEdits([{ range: new monaco.Range(
-                number, 1,
-                number + 1, 1
-            ), text: text + '\n' }])
-        }
-        Editor.replaceLine = replaceLine
-
-        // remove line
-        function removeLine (number) {
-            model.applyEdits([{ range: new monaco.Range(
-                number, 1,
-                number + 1, 1
-            ), text: '' }])
-        }
-        Editor.removeLine = removeLine
+        // set up global editor
+        editor.model = m
+        editor.editor = e
     })
 
     // highlight line
@@ -65,5 +67,5 @@ Editor = (() => {
     //     })
     // }, 2000)
 
-    return Editor
+    return editor
 })()
