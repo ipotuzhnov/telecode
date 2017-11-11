@@ -21,6 +21,7 @@
         "prefer-const": ["error"],
         "no-var": "error",
         "no-restricted-globals": ["error", "Promise"],
-        "no-control-regex": 0
+        "no-control-regex": 0,
+        "no-console": 0
     }
 }
