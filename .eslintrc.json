@@ -1,0 +1,26 @@
+{
+    "env": {
+        "es6": true,
+        "node": true,
+        "mocha": true
+    },
+    "extends": "eslint:recommended",
+    "rules": {
+        "func-names": ["error", "always"],
+        "eqeqeq": ["error", "always"],
+        "func-call-spacing": ["error", "never"],
+        "space-before-function-paren": ["error", "always"],
+        "indent": ["error", 4, { "SwitchCase": 1 }],
+        "linebreak-style": ["error", "unix"],
+        "quotes": ["error", "single"],
+        "semi": ["error", "never"],
+        "strict": ["error", "global"],
+        "eol-last": "warn",
+        "no-trailing-spaces": ["error", { "skipBlankLines": true }],
+        "no-unused-expressions" : ["error", { "allowShortCircuit": true, "allowTernary": true }],
+        "prefer-const": ["error"],
+        "no-var": "error",
+        "no-restricted-globals": ["error", "Promise"],
+        "no-control-regex": 0
+    }
+}
