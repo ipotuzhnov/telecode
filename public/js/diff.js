@@ -4,7 +4,6 @@ GitDiff = (() => {
 
     //const htmlString = Diff2Html.getPrettyHtml("somestring", {inputFormat: 'diff', showFiles: true, matching: 'lines'});
     //console.log(`htmlString ${htmlString}`)
-    
     class GitDiff {
         static getJSONFromDiff (gitDiff) {
             
@@ -16,7 +15,7 @@ GitDiff = (() => {
         }
     }
 
-   const gitDiffHtml = 
+   const gitDiffFile1 = 
         `diff --git a/public/index.html b/public/index.html
         index ccd4b91..b725ef0 100644
         --- a/public/index.html
@@ -35,7 +34,7 @@ GitDiff = (() => {
         -<div id="container" style="width:800px;height:600px;border:1px solid grey"></div>
         +<div id="container"   style="width:800px;height:600px;border:1px solid grey"></div>
     `
-    const gitDiffPackageJson = 
+    const gitDiffFile2 = 
     `diff --git a/package.json b/package.json
     index eb93f16..1238995 100644
     --- a/package.json
@@ -52,8 +51,8 @@ GitDiff = (() => {
         "socket.io-client": "2.0.4",
     `
 
-    GitDiff.getJSONFromDiff(gitDiffHtml);
-    GitDiff.getJSONFromDiff(gitDiffPackageJson);
+    GitDiff.getJSONFromDiff(gitDiffFile1);
+    GitDiff.getJSONFromDiff(gitDiffFile2);
 
     return GitDiff
 })()
