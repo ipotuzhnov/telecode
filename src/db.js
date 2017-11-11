@@ -16,7 +16,7 @@ module.exports = function DB ({dir}) {
             this.version = 0
             return await exec(`mkdir -p ${dir}`)
         },
-        async update (patch) {
+        async update ({patch}) {
             const tmpFileName = `tmp.${Date.now()}`
             await writeFile(`${dir}/${tmpFileName}`, patch)
             const ret = await dbExec(`cat ${tmpFileName} | patch`)
