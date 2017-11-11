@@ -19,7 +19,7 @@
 <script>
     $(function () {
         var socket = io();
-        socket.on('changes', function(msg){
+        socket.on('change', function(msg){
             console.log('sio-msg', msg)
             $('#messages').append($('<li>').text(msg));
         });
