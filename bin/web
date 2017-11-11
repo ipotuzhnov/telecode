@@ -6,13 +6,20 @@ const app     = express()
 const http    = require('http').Server(app)
 const io      = require('socket.io')(http)
 
+const connectedSockets = {}
+
 let version = 0
 io.on('connection', socket => {
-    console.log('a user connected')
+    if (!connectedSockets[socket.id]) {
+        console.log('a user with id ' + socket.id + ' connected')
+        connectedSockets[socket.id] = socket
+    }
+
     socket.on('commit', data => {
         version++
-        io.emit('change', {version, data})
-        console.log(`received data: version=${version}, data=${data}`)
+        const authorId = socket.id
+        io.emit('update', {authorId, version, data})
+        console.log(`received data: authorId=${authorId}, version=${version}, data=${data}`)
     })
 })
 
