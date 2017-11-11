@@ -4,11 +4,13 @@ function initSIO () {
     const SIO = { socket: null }
 
     SIO.socket = io(url)
-    SIO.socket.on("connect", function () {
-        console.log('connected')
-    })
-    SIO.socket.on('change', function(msg){
-        console.log('sio-msg', msg)
+    $(function () {
+        SIO.socket.on("connect", function () {
+            console.log('connected')
+        })
+        SIO.socket.on('change', function(msg){
+            console.log('sio-msg', msg)
+        })
     })
 
     return SIO
