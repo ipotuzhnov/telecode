@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "express": "^4.16.2",
+    "monaco-editor": "^0.10.1",
     "socket.io": "^2.0.4"
   }
 }
