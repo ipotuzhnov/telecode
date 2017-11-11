@@ -4,6 +4,9 @@
         "node": true,
         "mocha": true
     },
+    "parserOptions": {
+        "ecmaVersion": 8
+    },
     "extends": "eslint:recommended",
     "rules": {
         "func-names": ["error", "always"],
@@ -20,7 +23,6 @@
         "no-unused-expressions" : ["error", { "allowShortCircuit": true, "allowTernary": true }],
         "prefer-const": ["error"],
         "no-var": "error",
-        "no-restricted-globals": ["error", "Promise"],
         "no-control-regex": 0,
         "no-console": 0
     }
