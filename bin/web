@@ -6,10 +6,13 @@ const app     = express()
 const http    = require('http').Server(app)
 const io      = require('socket.io')(http)
 
+let version = 0
 io.on('connection', socket => {
     console.log('a user connected')
-    socket.on('changes', data => {
-        console.log("received data " + data)
+    socket.on('commit', data => {
+        version++
+        io.emit('change', {version, data})
+        console.log(`received data: version=${version}, data=${data}`)
     })
 })
 
