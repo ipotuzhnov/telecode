@@ -1,0 +1,9 @@
+.newChanges {
+	background: lightgreen;
+}
+.failedTest {
+    background: red;
+}
+.default {
+    background: white;
+}

@@ -12,102 +12,18 @@
 
 <div id="container" style="width:800px;height:600px;border:1px solid grey"></div>
 
+<script src="/node_modules/diff2html/dist/diff2html.js"></script>
 <script src="/socket.io/socket.io.js"></script>
 <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
 <script src="/node_modules/monaco-editor/min/vs/loader.js"></script>
 
-<style>
-.newChanges {
-	background: lightgreen;
-}
-.failedTest {
-    background: red;
-}
-.default {
-    background: white;
-}
+<script src="/js/diff.js"></script>
+<script src="/js/sio.js"></script>
+<script src="/js/editor.js"></script>
+
+<style src="/css/index.css"></style>
+
 </style>
 
-<script>
-
-        const diff = 
-`2,7d1
-< <html>
-< <head>
-< 	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-< 	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
-< </head>
-< <body>
-31,35d24
-<         const diff = ''
-<
-<         const lines = diff.split('n')
-<         console.log('lines', lines)
-<`
-
-        const lines = diff.split('\n')
-        console.log('lines', lines)
-
-        const marks = lines.filter(l => !l.startsWith('<'))
-
-        console.log('marks', marks)
-
-        function parseRange (s) { return s.split('d').shift().split(',').map(n => Number(n)) }
-        const ranges = marks.map(parseRange)
-
-        console.log('ranges', ranges)
-
-        setTimeout(() => {
-            if (!editor) return
-
-            var newDecorations = []
-
-            ranges.forEach(([ startLine, endLine ]) => {
-                console.log('new changes!!!')
-                var oldDecorations = editor.deltaDecorations(newDecorations, [{
-                    range: new monaco.Range(startLine,1,endLine,1),
-                    options: {
-                        isWholeLine: true,
-                        className: 'newChanges',
-                        // glyphMarginClassName: 'myGlyphMarginClass'
-                    }
-                }]);
-
-                setTimeout(() => {
-                    console.log('back to normal!!!')
-                    newDecorations = editor.deltaDecorations(oldDecorations, [{
-                        range: new monaco.Range(startLine,1,endLine,1),
-                        options: {
-                            isWholeLine: true,
-                            className: 'default',
-                            // glyphMarginClassName: 'myGlyphMarginClass'
-                        }
-                    }]);
-                }, 5000);
-            })
-        }, 2000)
-
-    $(function () {
-        var socket = io();
-        socket.on('change', function(msg){
-            console.log('sio-msg', msg)
-        });
-    })
-
-	require.config({ paths: { 'vs': '/node_modules/monaco-editor/min/vs' }});
-
-    console.log('more changes')
-
-	require(['vs/editor/editor.main'], function() {
-		fetch("/index.html")
-			.then(res => res.text())
-			.then(body => {
-				editor = monaco.editor.create(document.getElementById('container'), {
-					value: body,
-					language: 'javascript'
-				});
-			});
-	});
-</script>
 </body>
 </html>
