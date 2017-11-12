@@ -8,6 +8,12 @@ GitDiff = (() => {
         static getJSONFromDiff (gitDiff) {
             return Diff2Html.getJsonFromDiff(gitDiff)
         }
+
+        static async loadDiffFromURL (url) {
+            const body = await fetch(url)
+            const text = await body.text()
+            return GitDiff.getJSONFromDiff(text)
+        }
     }
 
     const gitDiffFile1 =
