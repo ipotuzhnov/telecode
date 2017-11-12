@@ -10,7 +10,7 @@ const DB        = require('../src/db')
 
 const DIR = path.resolve(process.env.DIR || `/tmp/nodeist-colony-${Date.now()}`)
 
-const commits = []
+const sessions = {}
 async function start () {
     const db = DB({dir: DIR})
     console.log(`Initializing database in directory ${DIR}`)
@@ -19,26 +19,30 @@ async function start () {
     io.on('connection', async socket => {
         console.log(`${socket.id} connected`)
         connectedSockets[socket.id] = socket
-        
-        socket.on('commit', data => {
-            console.log('got commit', data)
-            commits.push(data)
-            io.emit('change', data)
-        })
 
-        socket.on('replay', () => {
-            socket.emit('replay', commits)
-        })
-
-        socket.on('retrieve_file', data => {
-            // data = { requestId, name }
-            socket.broadcast.emit('retrieve_file', data)
-            console.log(`Emitting file after retrieval request ${JSON.stringify(data)}`)
-        })
-
-        socket.on('file_retrieved', data => {
-            // data = { requestId, name, content }
-            socket.broadcast.emit('file_retrieved', data)
+        socket.on('room', name => {
+            socket.join(name)
+            if (!sessions[name]) {
+                sessions[name] = []
+            }
+            socket.on('commit', data => {
+                console.log('got commit', data)
+                sessions[name].push(data)
+                io.to(name).emit('change', data)
+            })
+            socket.on('replay', () => {
+                socket.emit('replay', sessions[name])
+            })
+            socket.on('retrieve_file', data => {
+                // data = { requestId, name }
+                socket.broadcast.to(name).emit('retrieve_file', data)
+                console.log(`Emitting file after retrieval request ${JSON.stringify(data)}`)
+            })
+            socket.on('file_retrieved', data => {
+                // data = { requestId, name, content }
+                socket.broadcast.to(name).emit('file_retrieved', data)
+            })
+            socket.emit('joined')
         })
     })
     
