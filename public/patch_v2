@@ -1,0 +1,105 @@
+diff --git a/public/index.html b/public/index.html
+index ccd4b91..c505f02 100644
+--- a/public/index.html
++++ b/public/index.html
+@@ -6,25 +6,9 @@
+ </head>
+ <body>
+ 
+-<h2>Hello Ethel and Ilia! And Conner, someday.</h2>
++<h2>Hello Ethel and Ilia! And "Slacker" Conner, someday.</h2>
+ 
+-<ul id="messages"></ul>
+-
+-<div id="container" style="width:800px;height:600px;border:1px solid grey"></div>
+-
+-<script src="/node_modules/diff2html/dist/diff2html.js"></script>
+-<script src="/socket.io/socket.io.js"></script>
+-<script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+-<script src="/node_modules/monaco-editor/min/vs/loader.js"></script>
+-
+-<script src="/js/diff.js"></script>
+-<script src="/js/sio.js"></script>
+-<script src="/js/editor.js"></script>
+-<script src="/js/notification.js"></script>
+-
+-<style src="/css/index.css"></style>
+-
+-</style>
++Slacker Conner destroyed everything! Mu-ha-ha-ha-ha!!!
+ 
+ </body>
+ </html>
+diff --git a/public/js/diff.js b/public/js/diff.js
+index 507cfa1..e970014 100644
+--- a/public/js/diff.js
++++ b/public/js/diff.js
+@@ -8,6 +8,12 @@ GitDiff = (() => {
+         static getJSONFromDiff (gitDiff) {
+             return Diff2Html.getJsonFromDiff(gitDiff)
+         }
++
++        static async loadDiffFromURL (url) {
++            const body = await fetch(url)
++            const text = await body.text()
++            return GitDiff.getJSONFromDiff(text)
++        }
+     }
+ 
+     const gitDiffFile1 =
+diff --git a/public/js/editor.js b/public/js/editor.js
+index d02de99..e66aa37 100644
+--- a/public/js/editor.js
++++ b/public/js/editor.js
+@@ -1,10 +1,14 @@
+ // editor
+ Editor = (() => {
++    const INSERT = 'd2h-ins'
++    const DELETE = 'd2h-del'
++
+     class Editor {
+-        constructor (socket, editor, model) {
+-            this.editor = editor
+-            this.model = model
+-            this.socket = socket
++        constructor (fileName) {
++            this.fileName = fileName
++            this.editor = null
++            this.model = null
++            this.socket = null
+         }
+ 
+         insertLine (number, text) {
+@@ -28,11 +32,13 @@ Editor = (() => {
+             ), text: '' }])
+         }
+ 
+-        applyDiff (lines) {
+-            const INSERT = 'd2h-ins'
+-            const DELETE = 'd2h-del'
+-
+-            lines.forEach(line => {
++        applyDiff (diffs) {
++            const diff = diffs.find(d => d.oldName === this.fileName)
++            if (!diff) return
++            
++            const blocks = diff.blocks
++            
++            blocks.forEach(block => block.lines.forEach(line => {
+                 if (line.type === INSERT) {
+                     return this.insertLine(line.newNumber, line.content.slice(1))
+                 }
+@@ -40,11 +46,11 @@ Editor = (() => {
+                 if (line.type === DELETE) {
+                     return this.removeLine(line.oldNumber)
+                 }
+-            })
++            }))
+         }
+     }
+ 
+-    const editor = new Editor()
++    const editor = new Editor('public/index.html')
+ 
+     $.getScript('/js/sio.js', function () { 
+         const SIO = initSIO();

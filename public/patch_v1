@@ -1,0 +1,106 @@
+diff --git a/public/index.html b/public/index.html
+index ccd4b91..2022508 100644
+--- a/public/index.html
++++ b/public/index.html
+@@ -12,6 +12,7 @@
+ 
+ <div id="container" style="width:800px;height:600px;border:1px solid grey"></div>
+ 
++<script src="https://cdnjs.cloudflare.com/ajax/libs/diff_match_patch/20121119/diff_match_patch.js"></script>
+ <script src="/node_modules/diff2html/dist/diff2html.js"></script>
+ <script src="/socket.io/socket.io.js"></script>
+ <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+@@ -24,7 +25,5 @@
+ 
+ <style src="/css/index.css"></style>
+ 
+-</style>
+-
+ </body>
+ </html>
+diff --git a/public/js/diff.js b/public/js/diff.js
+index b4ee4db..507cfa1 100644
+--- a/public/js/diff.js
++++ b/public/js/diff.js
+@@ -6,12 +6,7 @@ GitDiff = (() => {
+     //console.log(`htmlString ${htmlString}`)
+     class GitDiff {
+         static getJSONFromDiff (gitDiff) {
+-            
+-            console.log(`getting dif ${gitDiff}`);
+-            
+-            const output =  Diff2Html.getJsonFromDiff(gitDiff);
+-            console.log(`output ${JSON.stringify(output)}`);
+-            return output;
++            return Diff2Html.getJsonFromDiff(gitDiff)
+         }
+     }
+ 
+@@ -51,8 +46,8 @@ index eb93f16..1238995 100644
+     "socket.io-client": "2.0.4",
+ `
+ 
+-    GitDiff.getJSONFromDiff(gitDiffFile1);
+-    GitDiff.getJSONFromDiff(gitDiffFile2);
++    GitDiff.gitDiffFile1 = gitDiffFile1
++    GitDiff.gitDiffFile2 = gitDiffFile2
+ 
+     return GitDiff
+ })()
+diff --git a/public/js/editor.js b/public/js/editor.js
+index 85afbf8..d02de99 100644
+--- a/public/js/editor.js
++++ b/public/js/editor.js
+@@ -2,9 +2,9 @@
+ Editor = (() => {
+     class Editor {
+         constructor (socket, editor, model) {
+-            this.editor = editor;
+-            this.model = model;
+-            this.socket = socket;
++            this.editor = editor
++            this.model = model
++            this.socket = socket
+         }
+ 
+         insertLine (number, text) {
+@@ -27,11 +27,28 @@ Editor = (() => {
+                 number + 1, 1
+             ), text: '' }])
+         }
++
++        applyDiff (lines) {
++            const INSERT = 'd2h-ins'
++            const DELETE = 'd2h-del'
++
++            lines.forEach(line => {
++                if (line.type === INSERT) {
++                    return this.insertLine(line.newNumber, line.content.slice(1))
++                }
++
++                if (line.type === DELETE) {
++                    return this.removeLine(line.oldNumber)
++                }
++            })
++        }
+     }
+ 
++    const editor = new Editor()
++
+     $.getScript('/js/sio.js', function () { 
+         const SIO = initSIO();
+-        const editor = new Editor(SIO.socket);
++        editor.socket = SIO.socket
+ 
+         require.config({ paths: { 'vs': '/node_modules/monaco-editor/min/vs' }})
+ 
+@@ -69,7 +86,7 @@ Editor = (() => {
+         //         }])
+         //     })
+         // }, 2000)
++    })
+ 
+-        return editor
+-     })
++    return editor
+ })()

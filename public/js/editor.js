@@ -37,17 +37,24 @@ Editor = (() => {
             if (!diff) return
             
             const blocks = diff.blocks
-            blocks.forEach(block => block.lines.forEach(line => {
-                if (line.type === INSERT) {
-                    console.log(`inserting line ${line.newNumber} line.content`)
-                    return this.insertLine(line.newNumber, line.content.slice(1))
-                }
+            return blocks.forEach(block => this.applyDiffBlock(block))
+        }
 
-                if (line.type === DELETE) {
-                    console.log(`deleting line ${line.oldNumber}`)
-                    return this.removeLine(line.oldNumber)
-                }
-            }))
+        applyDiffBlock (block) {
+            const changes = block.lines.reduce((c, line) => {
+                console.log('changes', c)
+                if (line.type === DELETE) c[DELETE].push({
+                    number: line.oldNumber,
+                })
+                if (line.type === INSERT) c[INSERT].push({
+                    number: line.newNumber,
+                    content: line.content.slice(1),
+                })
+                return c
+            }, { [DELETE]: [], [INSERT]: [] })
+
+            changes[DELETE].reverse().map(line => this.removeLine(line.number))
+            changes[INSERT].map(line => this.insertLine(line.number, line.content))
         }
     }
 
