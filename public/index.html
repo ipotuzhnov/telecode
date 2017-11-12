@@ -12,6 +12,14 @@
 
 <div id="container" style="width:800px;height:600px;border:1px solid grey"></div>
 
+<div id='diff'>
+	<div id="diff-box" style="width:800px;height:600px;border:1px solid grey">
+		<a href='#' class='close_notification' title='Click to Close'><img src="img/close_icon.gif" width="24" height="24" alt="Close" onClick="hide('diff')" /></a>
+		<h3 id="diff-title" h3></h3>
+		<div id="diff-content"></div>
+	</div>
+</div>
+
 <script src="/node_modules/diff2html/dist/diff2html.js"></script>
 <script src="/socket.io/socket.io.js"></script>
 <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
@@ -21,8 +29,14 @@
 <script src="/js/sio.js"></script>
 <script src="/js/editor.js"></script>
 <script src="/js/notification.js"></script>
+<script>
+	function hide(divId) {
+		document.getElementById(divId).style.display="none";
+	}
+</script>
 
 <style src="/css/index.css"></style>
+<link rel="stylesheet" type="text/css" href="/node_modules/diff2html/dist/diff2html.css">
 
 </style>
 

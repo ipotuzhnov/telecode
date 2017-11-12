@@ -2,19 +2,6 @@
 
 GitDiff = (() => {
 
-    //const htmlString = Diff2Html.getPrettyHtml("somestring", {inputFormat: 'diff', showFiles: true, matching: 'lines'});
-    //console.log(`htmlString ${htmlString}`)
-    class GitDiff {
-        static getJSONFromDiff (gitDiff) {
-            
-            console.log(`getting dif ${gitDiff}`);
-            
-            const output =  Diff2Html.getJsonFromDiff(gitDiff);
-            console.log(`output ${JSON.stringify(output)}`);
-            return output;
-        }
-    }
-
     const gitDiffFile1 =
 `diff --git a/public/index.html b/public/index.html
 index ccd4b91..b725ef0 100644
@@ -51,8 +38,46 @@ index eb93f16..1238995 100644
     "socket.io-client": "2.0.4",
 `
 
-    GitDiff.getJSONFromDiff(gitDiffFile1);
-    GitDiff.getJSONFromDiff(gitDiffFile2);
+    function date_diff_indays (dt1, dt2) {
+        return Math.floor((Date.UTC(dt2.getFullYear(), dt2.getMonth(), dt2.getDate()) - Date.UTC(dt1.getFullYear(), dt1.getMonth(), dt1.getDate()) ) /(1000 * 60 * 60 * 24));
+    }
 
-    return GitDiff
+    $.getScript('/js/notification.js', function () { 
+        const Notifications = initNotifcations();
+        const DiffTitleDiv = document.getElementById('diff-title');
+        const DiffDiv = document.getElementById('diff-content');
+        const now = new Date();
+
+        class GitDiff {
+            static getJSONFromDiff (userName, gitDiff) {
+                console.log(`getting dif ${gitDiff}`);
+                
+                const output =  Diff2Html.getJsonFromDiff(gitDiff);
+                console.log(`output ${JSON.stringify(output)}`);
+                return output;
+            }
+            static getPrettyHtmlFromDiff (userName, gitDiff) {
+                console.log(`html getting dif ${gitDiff}`);
+                
+                const output =  Diff2Html.getPrettyHtmlFromDiff(gitDiff);
+                console.log(`html output ${output}`);
+                const date = new Date();
+                const daysDiff = date_diff_indays(now, date) 
+                const when = daysDiff === 0 ? `today at ${
+                    [date.getHours(), date.getMinutes(), date.getSeconds()].join(":")}` : `${daysDiff} days ago`;
+                DiffTitleDiv.innerHTML = `Latest edits from your fellow developers: ${userName} pushed a change ${when}`;
+                DiffDiv.innerHTML = output;                
+                document.getElementById("diff").style.display="block";
+                Notifications.pushTestNotification(`${userName} has pushed a change. Applying the change!`);
+                return output;
+            }
+        }
+
+        GitDiff.getJSONFromDiff("John", gitDiffFile1);
+        GitDiff.getPrettyHtmlFromDiff("Tom", gitDiffFile1);
+        //GitDiff.getJSONFromDiff(gitDiffFile2);
+       // GitDiff.getPrettyHtmlFromDiff(gitDiffFile2);
+
+        return GitDiff
+    })
 })()
