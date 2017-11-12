@@ -1,6 +1,6 @@
 // socket-io
 SIO = (() => {
-    const url = 'localhost:5000'// 'https://nodeist-colony.herokuapp.com/'
+    const url = 'https://nodeist-colony.herokuapp.com/'
     const SIO = { socket: null }
     SIO.requestId = Date.now();
     
