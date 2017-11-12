@@ -72,7 +72,7 @@ async function applyChange (data) {
             await sync.apply(data.diff, REPO_DIR)
             await exec('git add .', {cwd : REPO_DIR})
             await exec(`git commit -m "${Date.now()}" --allow-empty`, {cwd: REPO_DIR})
-            await exec(`rsync --delete -r --exclude=.git ${REPO_DIR}/ ${process.cwd()}/`)
+            await exec(`rsync --delete -r --exclude=.git,node_modules ${REPO_DIR}/ ${process.cwd()}/`)
             startWatcher && await startWatcher()
 
         } catch (e) {
