@@ -75,10 +75,11 @@ Editor = (() => {
             console.log(`applyDiff ${this.fileName}`)
             const diff = diffs.find(d => d.oldName === this.fileName)
             console.log('found diff')
-            if (!diff) return
+            if (!diff) return false
             
             const blocks = diff.blocks
-            return blocks.forEach(block => this.applyDiffBlock(block))
+            blocks.forEach(block => this.applyDiffBlock(block))
+            return true
         }
 
         applyDiffBlock (block) {
@@ -127,8 +128,10 @@ Editor = (() => {
                     return console.log(`ignoring gitter ${data.gitter}`)
                 }
                 const diff = GitDiff.getJSONFromDiff(data.diff)
-                GitDiff.getPrettyHtmlFromDiff(data.diff)
-                editor.applyDiff(diff)
+                if (editor.applyDiff(diff)) {
+                    console.log("notifying")
+                    GitDiff.getPrettyHtmlFromDiff(data.diff)
+                }
             })
 
             require(['vs/editor/editor.main'], () => {
