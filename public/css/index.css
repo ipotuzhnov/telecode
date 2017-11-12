@@ -80,6 +80,10 @@ h3 {
     float: left;
     width: 100%;
     border: none;
+    color: black;
+}
+#diff h3 {
+    color: black;
 }
 #container div .monaco-editor { }
 .close_notification{
