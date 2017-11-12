@@ -82,3 +82,13 @@ h3 {
     border: none;
 }
 #container div .monaco-editor { }
+.close_notification{
+    font-size: 1.2em;
+    text-decoration: none;
+    color: red;
+}
+.close_notification:hover{
+    font-size: 1.2em;
+    text-decoration: none;
+    color: pink;
+}

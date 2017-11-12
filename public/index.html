@@ -51,9 +51,9 @@
 <div id="container" style="width:800px;height:600px;border:1px solid grey"></div>
 </div>
 
-<div id='diff'>
+<div id='diff' style="background:white; border-top: 60px gray solid; display: none;">
 	<div id="diff-box" style="width:800px;height:600px;border:1px solid grey">
-		<a href='#' class='close_notification' title='Click to Close'><img src="img/close_icon.gif" width="24" height="24" alt="Close" onClick="hide('diff')" /></a>
+		<a href='#' id="closediff" class='close_notification' title='Click to Close' style="" onclick="document.getElementById('closediff').style.display=\"none\"">Close</a>
 		<h3 id="diff-title" h3></h3>
 		<div id="diff-content"></div>
 	</div>
