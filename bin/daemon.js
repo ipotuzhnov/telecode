@@ -70,7 +70,7 @@ socket.on('connect', () => {
         socket.on('replay', async commits => {
             function sendCommit (diff) {
                 const data = {author: socket.id, diff}
-                console.log('emitting', data)
+                console.log(`emitting "commit" as ${socket.id} size ${diff.length}`)
                 socket.emit('commit', data)
             }
             if (commits.length === 0) {
@@ -89,6 +89,7 @@ socket.on('connect', () => {
 
             for (const commit of commits) {
                 console.log('applying change: ', commit)
+                console.log(`applying "commit" from ${commit.author} length ${commit.diff.length}`)
                 await applyChange(commit)
                 console.log('done applying change')
             }
@@ -97,11 +98,11 @@ socket.on('connect', () => {
                 let watcherId
                 startWatcher = async () => {
                     watcherId = Date.now()
-                    console.log('starting watcher', watcherId)
+                    // console.log('starting watcher', watcherId)
                     await sync.watch(process.cwd(), REPO_DIR, watcherId, diff => { sendCommit(diff) })
                 }
                 stopWatcher = () => {
-                    console.log('stopping watcher', watcherId)
+                    // console.log('stopping watcher', watcherId)
                     sync.unwatch(process.cwd())
                 }
             }
@@ -109,19 +110,22 @@ socket.on('connect', () => {
         })
 
         socket.on('retrieve_file', async ({ requestId, name }) => {
+            console.log(`reading file ${name} for ${requestId}`)
             const content = await readFile(`./${name}`, 'utf8')
+            console.log(`sending file $${name} to ${requestId} size ${content.length}`)
             socket.emit('file_retrieved', { requestId, name, content })
         })
 
         socket.on('file_changed', async data => {
-            console.log("file changed" + JSON.stringify(data));
-            await writeFile(data.name, data.content);
+            console.log(`applying remote commit from ${data.requestId}`)
+            await writeFile(data.name, data.content)
+            console.log(`applied remote commit from ${data.requestId}`)
         })
     })
 })
 
 async function applyChange (data) {
-    console.log('got update', data)
+    console.log(`got update from ${data.author} size ${data.diff.length}`)
     if (data.author !== socket.id) {
         try {
             stopWatcher && stopWatcher()
@@ -136,7 +140,7 @@ async function applyChange (data) {
             process.exit(1)
         }
     } else {
-        console.log(`${socket.id} Ignorning own updates of ${JSON.stringify(data)}`)
+        console.log(`Ignorning own updates from ${data.author}`)
     }
 
 }
