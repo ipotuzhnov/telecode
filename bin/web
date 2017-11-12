@@ -58,33 +58,26 @@ async function start () {
 
             // send a private messages to gitters
             // socket.to(id).emit('my message', msg);
-            socket.on('retrieve_file', data => {
+            socket.on('retrieve_file', (data, cb) => {
                 // data = { requestId, name }
                 // pick a gitter
                 const gitters = Object.keys(rooms[room].gitters)
                 if (gitters.length === 0) {
-                    return socket.broadcast.to(room).emit('file_retrieved', {
-                        requestId: data.requestId,
-                        name: data.name,
-                        context: 'No gitters available!',
-                    })
+                    return cb(`No gitters available in the "${room}" room`)
                 }
 
                 // ask just one gitter for the file
                 const gitter = gitters[0]
                 socket.to(gitter).emit('retrieve_file', data)
                 console.log(`Retrieving file ${data.name} from gitter ${gitter}`)
+                cb(null, { gitter })
             })
             socket.on('file_changed', (data, cb) => {
                 // data = { name, content }
                 // pick a gitter
                 const gitters = Object.keys(rooms[room].gitters)
                 if (gitters.length === 0) {
-                    return socket.broadcast.to(room).emit('file_retrieved', {
-                        requestId: data.requestId,
-                        name: data.name,
-                        context: 'No gitters available!',
-                    })
+                    return cb(`No gitters available in the "${room}" room`)
                 }
 
                 // ask just one gitter to apply the change

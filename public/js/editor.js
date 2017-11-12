@@ -31,6 +31,11 @@ Editor = (() => {
             return true
         }
 
+        setError (err) {
+            this.fileName = 'error.txt'
+            this.setContent({ name: this.fileName, content: err })
+        }
+
         setContent ({ name, content }) {
             this.fileName = name
             let ext = name.split('.').pop()

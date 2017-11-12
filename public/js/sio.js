@@ -36,6 +36,14 @@ SIO = (() => {
         Editor.resetFile(fileName)
         socket.emit('retrieve_file', {
             name: fileName, requestId: SIO.requestId
+        }, (err, data) => {
+            if (err) {
+                const errstring = `retrieve_file err: ${err}`
+                console.log(errstring)
+                Editor.setError(errstring)
+                return
+            }
+            console.log(`retrieve_file from gitter: ${data.gitter}`)
         })
     }
 
@@ -51,6 +59,13 @@ SIO = (() => {
             content: file.content,
             requestId: SIO.requestId
         }, (err, data) => {
+            if (err) {
+                const errstring = `file_changed err: ${err}`
+                console.log(errstring)
+                Editor.setError(errstring)
+                return
+            }
+            console.log(`file_changed from gitter: ${data.gitter}`)
             Editor.setIgnoredGitter(data.gitter)
         })
     }
