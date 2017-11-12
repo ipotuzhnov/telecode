@@ -46,6 +46,7 @@ async function start () {
             })
             socket.on('file_changed', data => {
                 console.log("file changed" + JSON.stringify(data));
+                socket.broadcast.to(name).emit('file_changed', data);                
             })
             socket.emit('joined')
         })

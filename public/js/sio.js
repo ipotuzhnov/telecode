@@ -37,9 +37,13 @@ SIO = (() => {
     }
 
     SIO.sendFile = function () {
-        const content = Editor.getValue();
-        console.log(`Sending content ${content}`);
-        socket.emit("file_changed", {file: content });
+        const file = Editor.getFile();
+        console.log(`Sending file ${JSON.stringify(file)}`);
+        if (!file.name || !file.content) {
+            console.log("error on file send");
+            return;
+        }
+        socket.emit("file_changed", file);
     }
 
     return SIO

@@ -83,10 +83,8 @@ Editor = (() => {
         Languages () {
             return Languages
         }
-        getValue () {
-            console.log('in getvalue')
-            //return this.editor ? null : this.editor.getValue();
-            return this.model ? this.model.getValue() : null;
+        getFile () {
+            return this.model ? {name: this.fileName, content: this.model.getValue()} : {};
         }
     }
 

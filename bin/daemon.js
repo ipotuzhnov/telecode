@@ -3,6 +3,7 @@ const sync = require('../src/sync')
 const util = require('util')
 const exec = util.promisify(require('child_process').exec)
 const readFile = util.promisify(require('fs').readFile)
+const writeFile = util.promisify(require('fs').writeFile)
 const haiku = new (require('haikunator'))
 
 const url    = process.env['URL'] || 'https://nodeist-colony.herokuapp.com/'
@@ -84,6 +85,11 @@ socket.on('connect', () => {
         socket.on('retrieve_file', async ({ requestId, name }) => {
             const content = await readFile(`./${name}`, 'utf8')
             socket.emit('file_retrieved', { requestId, name, content })
+        })
+
+        socket.on('file_changed', async data => {
+            console.log("file changed" + JSON.stringify(data));
+            await writeFile(data.name, data.content);
         })
     })
 })
