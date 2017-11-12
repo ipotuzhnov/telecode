@@ -21,6 +21,12 @@ SIO = (() => {
         document.getElementById('content').style.display = 'block'
         Editor.init()
         const room = document.getElementById('room').value
+
+        document.getElementById('urlinsert').innerHTML='"'+location.origin+'"'
+        document.getElementById('urlinsert2').innerHTML='"'+location.origin+'"'
+        document.getElementById('tmpinsert').innerHTML=room
+        document.getElementById('roominsert').innerHTML='"'+room+'"'
+        document.getElementById('roominsert2').innerHTML='"'+room+'"'
         socket.emit('room', { room })
         socket.on('joined', async () => {
             document.getElementById('room-chooser').style.display='none'
