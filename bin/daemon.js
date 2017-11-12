@@ -8,11 +8,35 @@ const readFile = util.promisify(require('fs').readFile)
 const writeFile = util.promisify(require('fs').writeFile)
 const haiku = new (require('haikunator'))
 
-const url    = process.env['URL'] || 'https://nodeist-colony.herokuapp.com/'
-const REPO_DIR = `/tmp/nodeist-${Date.now()}`
+const argv = require('minimist')(process.argv.slice(2))
+// parse cli args
+if (argv.h || argv.help || argv.usage) {
+    return console.log(`telecode usage
+    -u | --url    SIO server address (default 'https://nodeist-colony.herokuapp.com/')
+    -r | --room   The name of the room (default is a random Heroku like name)
+    --reset=true  Reset commits on the server
+`)
+}
+// -u | --url
+let url
+if (typeof argv.u === 'string' || typeof argv.url === 'string') {
+    url = argv.u || argv.url
+} else {
+    // default
+    url = process.env['URL'] || 'https://nodeist-colony.herokuapp.com/'
+}
+// -r | --room
+let ROOM
+if (typeof argv.r === 'string' || typeof argv.room === 'string') {
+    ROOM = argv.r || argv.room
+} else {
+    // default
+    ROOM = process.env['ROOM'] || haiku.haikunate()
+}
+const RESET = argv.reset === 'true' || process.env['RESET'] === 'true'
 
-const ROOM = process.env['ROOM'] || haiku.haikunate()
-const RESET = process.env['RESET'] === 'true'
+
+const REPO_DIR = `/tmp/nodeist-${Date.now()}`
 
 const socket = require('socket.io-client')(url)
 
