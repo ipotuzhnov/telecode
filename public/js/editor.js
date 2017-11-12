@@ -3,6 +3,8 @@ Editor = (() => {
     const INSERT = 'd2h-ins'
     const DELETE = 'd2h-del'
 
+    const Languages = {}
+
     class Editor {
         constructor (fileName) {
             this.fileName = fileName
@@ -17,9 +19,13 @@ Editor = (() => {
 
         setContent ({ name, content }) {
             this.fileName = name
-            const ext = name.split('.').pop()
+            let ext = name.split('.').pop()
+            ext = ext ? `.${ext}` : '.txt'
+            const lang = Languages[ext]
+            console.log(`loading file: ${name}, language: ${lang}`)
+
             const oldModel = this.model
-            this.model = monaco.editor.createModel(content, ext || 'txt')
+            this.model = monaco.editor.createModel(content, lang)
             this.editor.setModel(this.model)
             oldModel.dispose()
         }
@@ -72,6 +78,10 @@ Editor = (() => {
             changes[DELETE].reverse().map(line => this.removeLine(line.number))
             changes[INSERT].map(line => this.insertLine(line.number, line.content))
         }
+
+        Languages () {
+            return Languages
+        }
     }
 
     const fileName = 'foo'
@@ -101,6 +111,13 @@ Editor = (() => {
     })
 
     require(['vs/editor/editor.main'], () => {
+        const languages = monaco.languages.getLanguages()
+        languages.forEach(language => {
+            language.extensions.forEach(ext => {
+                Languages[ext] = language.id
+            })
+        })
+
         // initialize monaco editor
         const m = monaco.editor.createModel([
             'join a room',
