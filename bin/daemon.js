@@ -49,7 +49,7 @@ socket.on('connect', () => {
                 console.log('I am the master')
                 isMaster = true
             } else {
-                console.log('I am not the master')
+                console.log('I am not the master', commits.length)
             }
 
             await sync.initRepo(REPO_DIR)
