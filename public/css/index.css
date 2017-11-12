@@ -9,6 +9,7 @@ body input {
     color: lightgray;
     padding: 5px;
     font-family: courier;
+    text-align: center;
 }
 body button {
     margin: 10px;

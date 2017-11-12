@@ -4,10 +4,10 @@ SIO = (() => {
     const SIO = { socket: null }
     // SIO.requestId = Date.now();
     
-    const socket = io(url);
-    SIO.socket = socket;
+    const socket = io(url)
+    SIO.socket = socket
     $(function () {
-        SIO.socket.on("connect", function () {
+        SIO.socket.on('connect', function () {
             SIO.requestId = socket.id
             console.log('connected')
         })
@@ -17,33 +17,35 @@ SIO = (() => {
     })
 
     SIO.joinRoom = function () {
-        const room = document.getElementById("room").value;
+        document.getElementById('intro').display = 'none'
+        document.getElementById('content').display = 'block'
+        const room = document.getElementById('room').value
         socket.emit('room', { room })
         socket.on('joined', async () => {
-            document.getElementById("room-chooser").style.display="none";
-            document.getElementById("room-message").innerHTML = `Congratulations, you've joined room ${room}.`;
-            document.getElementById("file-chooser").style.display="block";
-            console.log("Joined");
+            document.getElementById('room-chooser').style.display='none'
+            document.getElementById('room-message').innerHTML = `Congratulations, you've joined room ${room}.`
+            document.getElementById('file-chooser').style.display='block'
+            console.log('Joined')
         })
     }
 
     SIO.retrieveFile = function () {
-        var fileName = document.getElementById("file").value;
-        console.log(`Retrieving ${fileName}`);
-        Editor.resetFile(fileName);
+        const fileName = document.getElementById('file').value
+        console.log(`Retrieving ${fileName}`)
+        Editor.resetFile(fileName)
         socket.emit('retrieve_file', {
             name: fileName, requestId: SIO.requestId
         })
     }
 
     SIO.sendFile = function () {
-        const file = Editor.getFile();
-        console.log(`Sending file ${file.name} with request id ${SIO.requestId})}`);
+        const file = Editor.getFile()
+        console.log(`Sending file ${file.name} with request id ${SIO.requestId})}`)
         if (!file.name || !file.content) {
-            console.log("error on file send");
-            return;
+            console.log('error on file send')
+            return
         }
-        socket.emit("file_changed", {
+        socket.emit('file_changed', {
             name: file.name,
             content: file.content,
             requestId: SIO.requestId
