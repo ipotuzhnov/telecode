@@ -21,6 +21,10 @@ async function start () {
         connectedSockets[socket.id] = socket
 
         socket.on('room', name => {
+            socket.on('reset', () => {
+                sessions[name] = []
+                socket.emit('reset')
+            })
             socket.join(name)
             if (!sessions[name]) {
                 sessions[name] = []

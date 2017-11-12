@@ -5,20 +5,38 @@ const exec = util.promisify(require('child_process').exec)
 const readFile = util.promisify(require('fs').readFile)
 
 const url    = process.env['URL'] || 'https://nodeist-colony.herokuapp.com/'
-const gitUrl = process.env['GIT_URL'] || 'localhost'
 const REPO_DIR = `/tmp/nodeist-${Date.now()}`
 
 const ROOM = process.env['ROOM'] || `room-${Date.now()}`
+const RESET = process.env['RESET'] === 'true'
 
 const socket = require('socket.io-client')(url)
 
 let startWatcher, stopWatcher
 // added a comment
 console.log(`attempting to connect to ${url}`)
+
 socket.on('connect', () => {
     console.log(`Joining room ${ROOM}...`)
     socket.emit('room', ROOM)
-    socket.on('joined', () => {
+    socket.on('joined', async () => {
+        function reset () {
+            return new Promise((resolve) => {
+                socket.emit('reset')
+                console.log('resetting...')
+                socket.on('reset', () => resolve())
+            })
+        }
+
+        socket.on('reset', () => {
+            console.log('The room was reset. Dying!!')
+            process.exit(0)
+        })
+
+        if (RESET === true) {
+            await reset()
+        }
+
         socket.emit('replay')
         let isMaster = false
         socket.on('replay', async commits => {
