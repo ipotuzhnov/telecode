@@ -8,7 +8,6 @@ Editor = (() => {
             this.fileName = fileName
             this.editor = null
             this.model = null
-            this.socket = null
         }
 
         insertLine (number, text) {
@@ -33,7 +32,10 @@ Editor = (() => {
         }
 
         applyDiff (diffs) {
+            console.log('applyDiff')
+            console.log(diffs)
             const diff = diffs.find(d => d.oldName === this.fileName)
+            console.log('found', diff)
             if (!diff) return
             
             const blocks = diff.blocks
@@ -52,54 +54,51 @@ Editor = (() => {
                 })
                 return c
             }, { [DELETE]: [], [INSERT]: [] })
-
+            console.log('all changes', changes)
             changes[DELETE].reverse().map(line => this.removeLine(line.number))
             changes[INSERT].map(line => this.insertLine(line.number, line.content))
         }
     }
 
-    const editor = new Editor('public/index.html')
+    const fileName = 'foo'
+    const editor = new Editor(fileName)
 
-    $.getScript('/js/sio.js', function () { 
-        const SIO = initSIO();
-        editor.socket = SIO.socket
+    require.config({ paths: { 'vs': '/node_modules/monaco-editor/min/vs' }})
 
-        require.config({ paths: { 'vs': '/node_modules/monaco-editor/min/vs' }})
-
-        require(['vs/editor/editor.main'], async () => {
-            editor.socket.emit("retrieve_file", {}, function (err, fileContent) {
-                if (err) throw err
-                // initialize monaco editor
-                const m = monaco.editor.createModel(fileContent, 'html')
-                const e = monaco.editor.create(
-                    document.getElementById('container'),
-                    { model: m }
-                )
-
-                // set up global editor
-                editor.model = m
-                editor.editor = e
-            })
+    require(['vs/editor/editor.main'], () => {
+        const requestId = 'where is my foo?'
+        console.log('I want my foo')
+        SIO.socket.emit('retrieve_file', {
+            name: fileName, requestId
+        })
+        
+        SIO.socket.on('change', data => {
+            console.log('got change', data)
+            const diff = GitDiff.getJSONFromDiff(data.diff)
+            editor.applyDiff(diff)
         })
 
-        // highlight line
-        // setTimeout(() => {
-        //     if (!Editor.editor) return
+        let lock = false
+        SIO.socket.on('file_retrieved', data => {
+            if (lock) return
+            lock = true
 
-        //     var newDecorations = []
+            console.log('file_retrieved', data)
+            if (data.requestId !== requestId) {
+                console.log('not my foo')
+            }
+        
+            // initialize monaco editor
+            const m = monaco.editor.createModel(data.content, 'html')
+            const e = monaco.editor.create(
+                document.getElementById('container'),
+                { model: m }
+            )
 
-        //     ranges.forEach(([ startLine, endLine ]) => {
-        //         console.log('new changes!!!')
-        //         var oldDecorations = editor.deltaDecorations(newDecorations, [{
-        //             range: new monaco.Range(startLine,1,endLine,1),
-        //             options: {
-        //                 isWholeLine: true,
-        //                 className: 'newChanges',
-        //                 // glyphMarginClassName: 'myGlyphMarginClass'
-        //             }
-        //         }])
-        //     })
-        // }, 2000)
+            // set up global editor
+            editor.model = m
+            editor.editor = e
+        })
     })
 
     return editor

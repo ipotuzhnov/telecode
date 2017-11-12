@@ -30,16 +30,15 @@ async function start () {
             socket.emit('replay', commits)
         })
 
-        socket.on('retrieve_file', async (data, callback) => {
-            let file
-            let error
-            try {
-                file = await db.readFile()
-                console.log(`Emiting file after retrieval request ${JSON.stringify(file)}`)
-            } catch (err) {
-                error = err
-            }
-            callback(error, file)
+        socket.on('retrieve_file', data => {
+            // data = { requestId, name }
+            socket.broadcast.emit('retrieve_file', data)
+            console.log(`Emitting file after retrieval request ${JSON.stringify(data)}`)
+        })
+
+        socket.on('file_retrieved', data => {
+            // data = { requestId, name, content }
+            socket.broadcast.emit('file_retrieved', data)
         })
     })
     

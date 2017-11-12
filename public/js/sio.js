@@ -1,5 +1,5 @@
 // socket-io
-function initSIO () {
+SIO = (() => {
     const url = 'http://localhost:5000'
     const SIO = { socket: null }
 
@@ -8,10 +8,10 @@ function initSIO () {
         SIO.socket.on("connect", function () {
             console.log('connected')
         })
-        SIO.socket.on('change', function(msg){
-            console.log('sio-msg', msg)
-        })
+        // SIO.socket.on('change', function(msg){
+        //     console.log('sio-msg', msg)
+        // })
     })
 
     return SIO
-}
+})()

@@ -1,7 +1,7 @@
  
 // notifications
 
-function initNotifcations () {
+Notifications = (() => {
     class Notifications {
         static init () {
             Notification.requestPermission().then((result) => {
@@ -30,4 +30,4 @@ function initNotifcations () {
     }
 
     return Notifications
-}
+})()

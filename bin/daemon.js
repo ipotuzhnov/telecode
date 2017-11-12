@@ -2,6 +2,7 @@
 const sync = require('../src/sync')
 const util = require('util')
 const exec = util.promisify(require('child_process').exec)
+const readFile = util.promisify(require('fs').readFile)
 
 const url    = process.env['URL'] || 'http://localhost:5000'
 const gitUrl = process.env['GIT_URL'] || 'localhost'
@@ -55,6 +56,11 @@ socket.on('connect', () => {
             }
         }
         startWatcher()
+    })
+
+    socket.on('retrieve_file', async ({ requestId, name }) => {
+        const content = await readFile(`./${name}`, 'utf8')
+        socket.emit('file_retrieved', { requestId, name, content })
     })
 })
 
