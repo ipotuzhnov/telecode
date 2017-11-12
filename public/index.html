@@ -10,19 +10,19 @@
 
 <div>
     <label for="room">Choose a room to join: </label>
-    <input type="text" id="room" name="room">
+    <input type="text" id="room" name="room" value="peanut">
   </div>
   <div>
-    <button onclick="SIO.joinRoom()>Submit</button>
+    <button onclick="SIO.joinRoom()">Submit</button>
   </div>
 </div>
 
 <div>
     <label for="file">Choose a file to view: </label>
-    <input type="text" id="file" name="file">
+    <input type="text" id="file" name="file" value="public/index.html">
   </div>
   <div>
-    <button>Submit</button>
+    <button onclick="SIO.retrieveFile()">Submit</button>
   </div>
 </div>
 

@@ -66,11 +66,8 @@ Editor = (() => {
     require.config({ paths: { 'vs': '/node_modules/monaco-editor/min/vs' }})
 
     require(['vs/editor/editor.main'], () => {
-        const requestId = 'where is my foo?'
+        const requestId = SIO.requestId;
         console.log('I want my foo')
-        SIO.socket.emit('retrieve_file', {
-            name: fileName, requestId
-        })
         
         SIO.socket.on('change', data => {
             console.log('got change', data)

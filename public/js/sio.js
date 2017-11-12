@@ -2,8 +2,10 @@
 SIO = (() => {
     const url = 'https://nodeist-colony.herokuapp.com/'
     const SIO = { socket: null }
-
-    SIO.socket = io(url)
+    SIO.requestId = Date.now();
+    
+    const socket = io(url);
+    SIO.socket = socket;
     $(function () {
         SIO.socket.on("connect", function () {
             console.log('connected')
@@ -14,7 +16,20 @@ SIO = (() => {
     })
 
     SIO.joinRoom = function () {
-        var room = document.getElementById("room")
+        var ROOM = document.getElementById("room").value;
+        socket.emit('room', ROOM)
+        socket.on('joined', async () => {
+            console.log("Joined");
+        })
+    }
+
+    SIO.retrieveFile = function () {
+        SIO.requestId = Date.now(); 
+        var fileName = document.getElementById("file").value;
+        console.log(`Retrieving ${fileName}`);
+        socket.emit('retrieve_file', {
+            name: fileName, requestId: SIO.requestId
+        })
     }
 
     return SIO
