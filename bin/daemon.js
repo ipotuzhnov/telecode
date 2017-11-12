@@ -88,8 +88,7 @@ socket.on('connect', () => {
             }
 
             for (const commit of commits) {
-                console.log('applying change: ', commit)
-                console.log(`applying "commit" from ${commit.author} length ${commit.diff.length}`)
+                console.log(`applying "commit" from ${commit.author} size ${commit.diff.length}`)
                 await applyChange(commit)
                 console.log('done applying change')
             }
