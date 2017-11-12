@@ -77,9 +77,8 @@ index eb93f16..1238995 100644
                 return GitDiff.getJSONFromDiff(text)
             }
         }
-
-        GitDiff.getJSONFromDiff("John", gitDiffFile1);
-        GitDiff.getPrettyHtmlFromDiff("Tom", gitDiffFile1);
+    //  GitDiff.getJSONFromDiff("John", gitDiffFile1);
+       // GitDiff.getPrettyHtmlFromDiff("Tom", gitDiffFile1);
         //GitDiff.getJSONFromDiff(gitDiffFile2);
        // GitDiff.getPrettyHtmlFromDiff(gitDiffFile2);
 
