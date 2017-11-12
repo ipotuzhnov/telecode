@@ -1,9 +1,78 @@
-.newChanges {
-	background: lightgreen;
+body {
+    text-align: center;
+    background: #333;
+    color: lightgray;
 }
-.failedTest {
-    background: red;
+body input {
+    background: #333;
+    border: 1px white solid;
+    color: lightgray;
+    padding: 5px;
+    font-family: courier;
 }
-.default {
-    background: white;
+body button {
+    margin: 10px;
+    background: #555;
+    border: 1px white solid;
+    color: lightgray;
+    padding: 5px;
+    font-family: courier;
 }
+
+body button:hover {
+    margin: 10px;
+    background: #777;
+    border: 1px white solid;
+    color: lightgray;
+    padding: 5px;
+    font-family: courier;
+}
+
+h2 {
+    font-size: 4em;
+    font-family: courier;
+}
+h3 {
+    font-family: courier;
+}
+#intro {
+  height: 100%;
+}
+#intro-inner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+#room-chooser {
+}
+#file-chooser {
+}
+#save {
+}
+#messages {
+}
+#content {
+    display: none;
+}
+#outercontainer {
+    float: left;
+    width: 100%;
+    border: none;
+}
+#container {
+    margin-left: auto;
+    margin-right: auto;
+    text-align: left;
+}
+#diff-box {
+    margin-left: auto;
+    margin-right: auto;
+}
+#diff {
+    clear: both;
+    float: left;
+    width: 100%;
+    border: none;
+}
+#container div .monaco-editor { }

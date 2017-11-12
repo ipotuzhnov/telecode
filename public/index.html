@@ -3,23 +3,31 @@
 <head>
 	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
+        <link rel="stylesheet" type="text/css" href="/css/index.css">
+        <link rel="stylesheet" type="text/css" href="/node_modules/diff2html/dist/diff2html.css">
 </head>
 <body>
 
-<div>
-	<h2>Welcome to collaborative coding!</h2>
-	<h4>~Presented to you by the nodeist-colony team~</h4>
-</div>
+    <div id="intro">
+        <div id="intro-inner">
+            <h2>Welcome to Telecode</h2>
+            <h3>The world's most advanced real-time collaborative programming experience</h3>
+            <h3>To begin, pick a name for the room to collaborate in:</h3>
+            <div id="room-chooser" style="display:block">
+                <input placeholder="Name your room" type="text" id="room" name="room" value="peanut"></input>
+                <div>
+                    <button onclick="SIO.joinRoom()">Join room!</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<div id="room-chooser" style="display:block">
-    <label for="room">Choose a room to join: </label>
-	<input type="text" id="room" name="room" value="peanut"></input>
-	<button onclick="SIO.joinRoom()">Join room!</button>
-</div>
+
+<div id="content">
 
 <div id="file-chooser" style="display:none">
 	<h3 id="room-message"></h3>
-    <label for="file">Choose a file to view: </label>
+        <label for="file">Choose a file to view: </label>
 	<input type="text" id="file" name="file" value="public/index.html"></input>
 	<button onclick="SIO.retrieveFile()">Load file!</button>
 </div>
@@ -30,7 +38,9 @@
 
 <ul id="messages"></ul>
 
+<div id="outercontainer">
 <div id="container" style="width:800px;height:600px;border:1px solid grey"></div>
+</div>
 
 <div id='diff'>
 	<div id="diff-box" style="width:800px;height:600px;border:1px solid grey">
@@ -38,6 +48,8 @@
 		<h3 id="diff-title" h3></h3>
 		<div id="diff-content"></div>
 	</div>
+</div>
+
 </div>
 
 <script src="/node_modules/diff2html/dist/diff2html.js"></script>
@@ -54,11 +66,6 @@
 		document.getElementById(divId).style.display="none";
 	}
 </script>
-
-<style src="/css/index.css"></style>
-<link rel="stylesheet" type="text/css" href="/node_modules/diff2html/dist/diff2html.css">
-
-</style>
 
 </body>
 </html>
