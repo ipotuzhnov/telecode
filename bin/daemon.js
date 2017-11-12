@@ -20,7 +20,7 @@ console.log(`attempting to connect to ${url}`)
 
 socket.on('connect', () => {
     console.log(`Joining room ${ROOM}...`)
-    socket.emit('room', ROOM)
+    socket.emit('room', { room: ROOM, gitter: true })
     socket.on('joined', async () => {
         function reset () {
             return new Promise((resolve) => {

@@ -1,6 +1,6 @@
 // socket-io
 SIO = (() => {
-    const url = 'https://nodeist-colony.herokuapp.com/'
+    const url = location.origin
     const SIO = { socket: null }
     SIO.requestId = Date.now();
     
@@ -16,11 +16,11 @@ SIO = (() => {
     })
 
     SIO.joinRoom = function () {
-        var ROOM = document.getElementById("room").value;
-        socket.emit('room', ROOM)
+        const room = document.getElementById("room").value;
+        socket.emit('room', { room })
         socket.on('joined', async () => {
             document.getElementById("room-chooser").style.display="none";
-            document.getElementById("room-message").innerHTML = `Congratulations, you've joined room ${ROOM}.`;
+            document.getElementById("room-message").innerHTML = `Congratulations, you've joined room ${room}.`;
             document.getElementById("file-chooser").style.display="block";
             console.log("Joined");
         })

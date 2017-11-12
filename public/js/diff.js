@@ -16,7 +16,7 @@ GitDiff = (() => {
             console.log('jsonifying diff')
             return Diff2Html.getJsonFromDiff(gitDiff)
         }
-        static getPrettyHtmlFromDiff (userName, gitDiff) {
+        static getPrettyHtmlFromDiff (gitDiff) {
             console.log(`html getting dif ${gitDiff}`);
             
             const output =  Diff2Html.getPrettyHtmlFromDiff(gitDiff);
@@ -25,10 +25,10 @@ GitDiff = (() => {
             const daysDiff = date_diff_indays(now, date) 
             const when = daysDiff === 0 ? `today at ${
                 [date.getHours(), date.getMinutes(), date.getSeconds()].join(":")}` : `${daysDiff} days ago`;
-            DiffTitleDiv.innerHTML = `Latest edits from your fellow developers: ${userName} pushed a change ${when}`;
+            DiffTitleDiv.innerHTML = `Your fellow developer pushed a change ${when}`;
             DiffDiv.innerHTML = output;                
             document.getElementById("diff").style.display="block";
-            Notifications.pushTestNotification(`${userName} has pushed a change. Applying the change!`);
+            Notifications.pushTestNotification('Your fellow developer has pushed a change. Applying the change!')
             return output;
         }
         static async loadDiffFromURL (url) {

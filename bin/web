@@ -9,7 +9,7 @@ const path      = require('path')
 
 const DIR = path.resolve(process.env.DIR || `/tmp/nodeist-colony-${Date.now()}`)
 
-const sessions = {}
+const rooms = {}
 async function start () {
     console.log(`Initializing database in directory ${DIR}`)
     const connectedSockets = {}
@@ -18,35 +18,48 @@ async function start () {
         console.log(`${socket.id} connected`)
         connectedSockets[socket.id] = socket
 
-        socket.on('room', name => {
-            socket.on('reset', () => {
-                sessions[name] = []
-                io.to(name).emit('reset')
-            })
-            socket.join(name)
-            if (!sessions[name]) {
-                sessions[name] = []
+        socket.on('room', ({ room, gitter }) => {
+            if (!rooms[room]) {
+                rooms[room] = {
+                    commits: [],
+                    gitters: {}
+                }
             }
+            if (gitter) {
+                rooms[room].gitters[socket.id] = socket.id
+            }
+
+            socket.join(room)
+
+            socket.on('reset', () => {
+                rooms[room].commits = []
+                io.to(room).emit('reset')
+            })
             socket.on('commit', data => {
                 console.log('got commit', data)
-                sessions[name].push(data)
-                io.to(name).emit('change', data)
+                rooms[room].commits.push(data)
+                io.to(room).emit('change', data)
             })
             socket.on('replay', () => {
-                socket.emit('replay', sessions[name])
+                socket.emit('replay', rooms[room].commits)
             })
-            socket.on('retrieve_file', data => {
-                // data = { requestId, name }
-                socket.broadcast.to(name).emit('retrieve_file', data)
-                console.log(`Emitting file after retrieval request ${JSON.stringify(data)}`)
-            })
+
+            
             socket.on('file_retrieved', data => {
                 // data = { requestId, name, content }
-                socket.broadcast.to(name).emit('file_retrieved', data)
+                socket.broadcast.to(room).emit('file_retrieved', data)
+            })
+
+            // send a private messages to gitters
+            // socket.to(id).emit('my message', msg);
+            socket.on('retrieve_file', data => {
+                // data = { requestId, name }
+                socket.broadcast.to(room).emit('retrieve_file', data)
+                console.log(`Emitting file after retrieval request ${JSON.stringify(data)}`)
             })
             socket.on('file_changed', data => {
                 console.log("file changed" + JSON.stringify(data));
-                socket.broadcast.to(name).emit('file_changed', data);                
+                socket.broadcast.to(room).emit('file_changed', data);                
             })
             socket.emit('joined')
         })
