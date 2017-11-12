@@ -46,6 +46,28 @@
 </div>
 
 <ul id="messages"></ul>
+    <pre id="instructions" style="text-align: left; width: 600px ; margin-left: auto; margin-right: auto;">
+        <h3 style="text-align: center">Instructions</h3>
+        Install the telecode daemon on your local box. Node.js 8 or higher is required.
+        <p style="background: black; padding:4px;">npm install -g telecode</p>
+
+        Navigate to the folder on your system that you wish to collaborate on.
+        Launch the telecode daemon.
+        <p style="background: black; padding:4px;">telecode --url=<span id="urlinsert"></span> --room=<span id="roominsert"></span></p>
+
+        You may then open any of the files in that directory inside this browser editor by typing
+        the filename into the box below
+
+        Have your collaborators run their own daemons in empty directories.
+        <div style="background: black; padding:4px;">
+mkdir -p /tmp/<span id="tmpinsert"></span>
+telecode --url=<span id="urlinsert2"></span> --room=<span id="roominsert2"></span>
+        </div>
+
+        Files will be synced across computers (and here into your browser) on every save!
+        Happy collaborating!
+    </div>
+    <a id="hideinstructions" href="#" style="color: cyan; text-decoration:none; margin:5px;" onclick="document.getElementById('instructions').style.display = 'none';document.getElementById('hideinstructions').style.display = 'none';">Click here to hide instructions</a>
 
 <div id="outercontainer">
 <div id="container" style="width:800px;height:600px;border:1px solid grey"></div>

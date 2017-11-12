@@ -11,7 +11,8 @@
     "heroku-postbuild": "echo Add any build commands here!"
   },
   "bin": {
-    "telecode": "bin/daemon.js"
+    "telecode": "bin/daemon.js",
+    "telecode-server": "bin/web"
   },
   "license": "Richard, Ilia, Ethel, and Conner",
   "devDependencies": {
