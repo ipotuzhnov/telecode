@@ -13,5 +13,9 @@ SIO = (() => {
         // })
     })
 
+    SIO.joinRoom = function () {
+        var room = document.getElementById("room")
+    }
+
     return SIO
 })()
