@@ -11,17 +11,18 @@ const DB        = require('../src/db')
 const DIR = path.resolve(process.env.DIR || `/tmp/nodeist-colony-${Date.now()}`)
 
 async function start () {
-    const db = DB(DIR)
+    const db = DB({dir: DIR})
     console.log(`Initializing database in directory ${DIR}`)
     await db.init()
+    db.initGitServer()
+    console.log('done initting')
     const connectedSockets = {}
     
-    let version = 0
     io.on('connection', async socket => {
         console.log(`${socket.id} connected`)
         connectedSockets[socket.id] = socket
         
-        socket.on("retrieve_file", async (data, callback) => {
+        socket.on('retrieve_file', async (data, callback) => {
             let file
             let error
             try {
@@ -31,14 +32,6 @@ async function start () {
                 error = err
             }
             callback(error, file)
-        })
-
-        socket.on('commit', async data => {
-            version++
-            const authorId = socket.id
-            await db.update(data)
-            io.emit('update', {authorId, version, data})
-            console.log(`received data: authorId=${authorId}, version=${version}, data=${JSON.stringify(data)}`)
         })
     })
     

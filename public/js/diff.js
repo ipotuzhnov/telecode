@@ -71,6 +71,11 @@ index eb93f16..1238995 100644
                 Notifications.pushTestNotification(`${userName} has pushed a change. Applying the change!`);
                 return output;
             }
+            static async loadDiffFromURL (url) {
+                const body = await fetch(url)
+                const text = await body.text()
+                return GitDiff.getJSONFromDiff(text)
+            }
         }
 
         GitDiff.getJSONFromDiff("John", gitDiffFile1);

@@ -1,10 +1,14 @@
 // editor
 Editor = (() => {
+    const INSERT = 'd2h-ins'
+    const DELETE = 'd2h-del'
+
     class Editor {
-        constructor (socket, editor, model) {
-            this.editor = editor;
-            this.model = model;
-            this.socket = socket;
+        constructor (fileName) {
+            this.fileName = fileName
+            this.editor = null
+            this.model = null
+            this.socket = null
         }
 
         insertLine (number, text) {
@@ -27,11 +31,31 @@ Editor = (() => {
                 number + 1, 1
             ), text: '' }])
         }
+
+        applyDiff (diffs) {
+            const diff = diffs.find(d => d.oldName === this.fileName)
+            if (!diff) return
+            
+            const blocks = diff.blocks
+            blocks.forEach(block => block.lines.forEach(line => {
+                if (line.type === INSERT) {
+                    console.log(`inserting line ${line.newNumber} line.content`)
+                    return this.insertLine(line.newNumber, line.content.slice(1))
+                }
+
+                if (line.type === DELETE) {
+                    console.log(`deleting line ${line.oldNumber}`)
+                    return this.removeLine(line.oldNumber)
+                }
+            }))
+        }
     }
+
+    const editor = new Editor('public/index.html')
 
     $.getScript('/js/sio.js', function () { 
         const SIO = initSIO();
-        const editor = new Editor(SIO.socket);
+        editor.socket = SIO.socket
 
         require.config({ paths: { 'vs': '/node_modules/monaco-editor/min/vs' }})
 
@@ -69,7 +93,7 @@ Editor = (() => {
         //         }])
         //     })
         // }, 2000)
+    })
 
-        return editor
-     })
+    return editor
 })()
