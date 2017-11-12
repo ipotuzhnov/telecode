@@ -40,7 +40,7 @@ async function start () {
                 io.to(room).emit('reset')
             })
             socket.on('commit', data => {
-                console.log('got commit', data)
+                console.log(`got commit for ${data.author} size ${data.diff && data.diff.length}`)
                 rooms[room].commits.push(data)
                 io.to(room).emit('change', Object.assign({
                     gitter: socket.id
@@ -82,7 +82,7 @@ async function start () {
 
                 // ask just one gitter to apply the change
                 const gitter = gitters[0]
-                console.log('file changed', JSON.stringify(data))
+                console.log(`file changed ${data.name} size ${data.content && data.content.length}`)
                 socket.to(gitter).emit('file_changed', data)
                 console.log(`Applying changes ${data.name} on gitter ${gitter}`)
                 cb(null, { gitter })
