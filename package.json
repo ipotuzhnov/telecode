@@ -13,7 +13,7 @@
   "bin": {
     "telecode": "bin/daemon.js"
   },
-  "license": "MIT",
+  "license": "Richard, Ilia, Ethel, and Conner",
   "devDependencies": {
     "nodemon": "^1.11.0"
   },
