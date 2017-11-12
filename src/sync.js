@@ -23,15 +23,13 @@ module.exports = {
 
     // Rsyncs a directory into the directory of a git repo, commits and pushes.
     async syncDirToRepo (dir, repoDir) {
+        console.log(`syncing ${dir} to ${repoDir}`)
         await exec(`rsync -r --delete --exclude=.git --exclude=node_modules ${dir}/ ${repoDir}/`)
         const cwd = repoDir
         await exec('git add .', {cwd})
         const result = await exec('git diff --staged', {cwd})
-        console.log('result', result)
         const diff = result.stdout
-        console.log('diff', diff)
         await exec(`git commit --allow-empty -m ${Date.now()}`, {cwd})
-        console.log('diff', diff)
         return diff
     },
 
@@ -42,7 +40,6 @@ module.exports = {
                 return
             }
             if (lock) return
-            console.log('Received from watcher', watcherId)
             lock = true
             const diff = await this.syncDirToRepo(dir, repoDir)
             sendCommit(diff)
