@@ -111,7 +111,8 @@ Editor = (() => {
     SIO.socket.on('change', data => {
         console.log('got change', data)
         const diff = GitDiff.getJSONFromDiff(data.diff)
-        editor.applyDiff(diff)
+        GitDiff.getPrettyHtmlFromDiff(data.diff);
+        editor.applyDiff(diff);
     })
 
     require(['vs/editor/editor.main'], () => {
