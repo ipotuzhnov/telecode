@@ -1,6 +1,6 @@
 // socket-io
 SIO = (() => {
-    const url = 'http://localhost:5000'
+    const url = 'https://nodeist-colony.herokuapp.com/'
     const SIO = { socket: null }
 
     SIO.socket = io(url)

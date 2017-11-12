@@ -4,7 +4,7 @@ const util = require('util')
 const exec = util.promisify(require('child_process').exec)
 const readFile = util.promisify(require('fs').readFile)
 
-const url    = process.env['URL'] || 'http://localhost:5000'
+const url    = process.env['URL'] || 'https://nodeist-colony.herokuapp.com/'
 const gitUrl = process.env['GIT_URL'] || 'localhost'
 const REPO_DIR = `/tmp/nodeist-${Date.now()}`
 
