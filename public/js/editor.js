@@ -11,10 +11,24 @@ Editor = (() => {
             this.editor = null
             this.model = null
             this.files = {}
+            this.gitters = {}
         }
 
         resetFile (fileName) {
             delete this.files[fileName]
+        }
+
+        setIgnoredGitter (gitter) {
+            console.log(`setIgnoredGitter to ${gitter}`)
+            this.gitters[gitter] = 'ignore'
+        }
+
+        ignoreGitterOnce (gitter) {
+            console.log(`ignoreGitterOnce to ${gitter}`)
+            if (!this.gitters[gitter]) return false
+
+            delete this.gitters[gitter]
+            return true
         }
 
         setContent ({ name, content }) {
@@ -104,6 +118,9 @@ Editor = (() => {
 
             SIO.socket.on('change', data => {
                 console.log('got change')
+                if (editor.ignoreGitterOnce(data.gitter)) {
+                    return console.log(`ignoring gitter ${data.gitter}`)
+                }
                 const diff = GitDiff.getJSONFromDiff(data.diff)
                 GitDiff.getPrettyHtmlFromDiff(data.diff)
                 editor.applyDiff(diff)

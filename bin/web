@@ -42,7 +42,9 @@ async function start () {
             socket.on('commit', data => {
                 console.log('got commit', data)
                 rooms[room].commits.push(data)
-                io.to(room).emit('change', data)
+                io.to(room).emit('change', Object.assign({
+                    gitter: socket.id
+                }, data))
             })
             socket.on('replay', () => {
                 socket.emit('replay', rooms[room].commits)
@@ -73,7 +75,7 @@ async function start () {
                 socket.to(gitter).emit('retrieve_file', data)
                 console.log(`Retrieving file ${data.name} from gitter ${gitter}`)
             })
-            socket.on('file_changed', data => {
+            socket.on('file_changed', (data, cb) => {
                 // data = { name, content }
                 // pick a gitter
                 const gitters = Object.keys(rooms[room].gitters)
@@ -90,6 +92,7 @@ async function start () {
                 console.log('file changed', JSON.stringify(data))
                 socket.to(gitter).emit('file_changed', data)
                 console.log(`Applying changes ${data.name} on gitter ${gitter}`)
+                cb(null, { gitter })
             })
             socket.emit('joined')
         })

@@ -50,6 +50,8 @@ SIO = (() => {
             name: file.name,
             content: file.content,
             requestId: SIO.requestId
+        }, (err, data) => {
+            Editor.setIgnoredGitter(data.gitter)
         })
     }
 
