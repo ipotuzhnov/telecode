@@ -6,37 +6,76 @@ const exec = util.promisify(require('child_process').exec)
 const url    = process.env['URL'] || 'http://localhost:5000'
 const gitUrl = process.env['GIT_URL'] || 'localhost'
 const REPO_DIR = `/tmp/nodeist-${Date.now()}`
-console.log('repo dir', REPO_DIR)
 
 const socket = require('socket.io-client')(url)
 
-let locked
+let startWatcher, stopWatcher
 // added a comment
 console.log(`attempting to connect to ${url}`)
 socket.on('connect', () => {
-    console.log('connected')
-    sync.watch(process.cwd(), REPO_DIR, diff => {
-        if (locked) return
-        const data = {author: socket.id, diff}
-        console.log('emitting', data)
-        socket.emit('commit', data)
+    socket.emit('replay')
+    let isMaster = false
+    socket.on('replay', async commits => {
+
+        function sendCommit (diff) {
+            const data = {author: socket.id, diff}
+            console.log('emitting', data)
+            socket.emit('commit', data)
+        }
+        if (commits.length === 0) {
+            console.log('I am the master')
+            isMaster = true
+        } else {
+            console.log('I am not the master')
+        }
+
+        await sync.initRepo(REPO_DIR)
+
+        if (isMaster) {
+            const diff = await sync.syncDirToRepo(process.cwd(), REPO_DIR)
+            sendCommit(diff)
+        }
+
+        for (const commit of commits) {
+            console.log('applying change: ', commit)
+            await applyChange(commit)
+            console.log('done applying change')
+        }
+
+        {
+            let watcherId
+            startWatcher = async () => {
+                watcherId = Date.now()
+                console.log('starting watcher', watcherId)
+                await sync.watch(process.cwd(), REPO_DIR, watcherId, diff => { sendCommit(diff) })
+            }
+            stopWatcher = () => {
+                console.log('stopping watcher', watcherId)
+                sync.unwatch(process.cwd())
+            }
+        }
+        startWatcher()
     })
 })
 
-socket.on('change', async data => {
-    console.log('got update')
+async function applyChange (data) {
+    console.log('got update', data)
     if (data.author !== socket.id) {
         try {
-            await sync.apply(data.diff)
-            locked = true
-            await exec(`rsync -r ${REPO_DIR} ${process.cwd()}`)
+            stopWatcher && stopWatcher()
+            await sync.apply(data.diff, REPO_DIR)
+            await exec('git add .', {cwd : REPO_DIR})
+            await exec(`git commit -m "${Date.now()}" --allow-empty`, {cwd: REPO_DIR})
+            await exec(`rsync --delete -r --exclude=.git ${REPO_DIR}/ ${process.cwd()}/`)
+            startWatcher && await startWatcher()
+
         } catch (e) {
             console.error(e)
             process.exit(1)
-        } finally {
-            locked = false
         }
-
+    } else {
+        console.log(`${socket.id} Ignorning own updates of ${JSON.stringify(data)}`)
     }
-    console.log(`${socket.id} Ignorning own updates of ${JSON.stringify(data)}`)
-})
+
+}
+socket.on('change', applyChange)

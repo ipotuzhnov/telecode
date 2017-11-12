@@ -21,6 +21,6 @@
     "monaco-editor": "^0.10.1",
     "socket.io": "^2.0.4",
     "socket.io-client": "2.0.4",
-    "watchr": "^3.0.1"
+    "watch": "^1.0.2"
   }
 }
