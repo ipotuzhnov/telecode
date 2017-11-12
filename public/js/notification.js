@@ -1,6 +1,7 @@
  
 // notifications
-Notifications = (() => {
+
+function initNotifcations () {
     class Notifications {
         static init () {
             Notification.requestPermission().then((result) => {
@@ -8,20 +9,25 @@ Notifications = (() => {
             })
         }
 
-        static pushTestNotification () {
+        static pushTestNotification (content) {
             Notifications.push(
                 'Node knockout project says',
-                'Whaaa, I\'m becoming well-adjusted, pay attention to me!',
+                content,
                 '../img/' + 'happy' + '_head.png'
             )
         }
 
         static push (title, body, icon) {
             const n = new Notification(title, { body, icon })
-            console.log('displaying notification for 10 seconds')
+            n.onclick = function(event) {
+                const diffDiv = document.getElementById("diff");
+                document.getElementById("diff").style.display="block";
+                window.location.href="#diff";
+                setTimeout(n.close.bind(n), 100)
+            }
             setTimeout(n.close.bind(n), 10000)
         }
     }
 
     return Notifications
-})()
+}
