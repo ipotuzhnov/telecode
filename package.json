@@ -1,7 +1,7 @@
 {
-  "name": "nko-quickstart",
-  "repository": "https://github.com/hunterloftis/nko-quickstart",
-  "version": "1.0.0",
+  "name": "telecode",
+  "repository": "https://github.com/Hackbit/nko2017-nodeistcolony",
+  "version": "0.0.1",
   "engines": {
     "node": "8.9.1",
     "npm": "5.5.1"
@@ -10,7 +10,9 @@
     "start": "nodemon --watch . --watch bin/* bin/web",
     "heroku-postbuild": "echo Add any build commands here!"
   },
-  "main": "bin/web",
+  "bin": {
+    "telecode": "bin/telecode.js"
+  },
   "license": "MIT",
   "devDependencies": {
     "nodemon": "^1.11.0"

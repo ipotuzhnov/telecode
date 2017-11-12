@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 'use strict'
 const sync = require('../src/sync')
 const util = require('util')
