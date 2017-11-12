@@ -8,6 +8,20 @@ Editor = (() => {
             this.fileName = fileName
             this.editor = null
             this.model = null
+            this.files = {}
+        }
+
+        resetFile (fileName) {
+            delete this.files[fileName]
+        }
+
+        setContent ({ name, content }) {
+            this.fileName = name
+            const ext = name.split('.').pop()
+            const oldModel = this.model
+            this.model = monaco.editor.createModel(content, ext || 'txt')
+            this.editor.setModel(this.model)
+            oldModel.dispose()
         }
 
         insertLine (number, text) {
@@ -32,7 +46,7 @@ Editor = (() => {
         }
 
         applyDiff (diffs) {
-            console.log('applyDiff')
+            console.log(`applyDiff ${this.fileName}`)
             console.log(diffs)
             const diff = diffs.find(d => d.oldName === this.fileName)
             console.log('found', diff)
@@ -65,37 +79,42 @@ Editor = (() => {
 
     require.config({ paths: { 'vs': '/node_modules/monaco-editor/min/vs' }})
 
-    require(['vs/editor/editor.main'], () => {
+    SIO.socket.on('file_retrieved', data => {
+        console.log('file_retrieved', data)
         const requestId = SIO.requestId;
-        console.log('I want my foo')
-        
-        SIO.socket.on('change', data => {
-            console.log('got change', data)
-            const diff = GitDiff.getJSONFromDiff(data.diff)
-            editor.applyDiff(diff)
-        })
+        const fileName = data.name
 
-        let lock = false
-        SIO.socket.on('file_retrieved', data => {
-            if (lock) return
-            lock = true
+        if (editor.files[fileName]) return
+        editor.files[fileName] = 'retrieved'
 
-            console.log('file_retrieved', data)
-            if (data.requestId !== requestId) {
-                console.log('not my foo')
-            }
-        
-            // initialize monaco editor
-            const m = monaco.editor.createModel(data.content, 'html')
-            const e = monaco.editor.create(
-                document.getElementById('container'),
-                { model: m }
-            )
+        if (data.requestId !== requestId) {
+            console.log('not my foo')
+        }
 
-            // set up global editor
-            editor.model = m
-            editor.editor = e
-        })
+        editor.setContent(data)
+    })
+
+    SIO.socket.on('change', data => {
+        console.log('got change', data)
+        const diff = GitDiff.getJSONFromDiff(data.diff)
+        editor.applyDiff(diff)
+    })
+
+    require(['vs/editor/editor.main'], () => {
+        // initialize monaco editor
+        const m = monaco.editor.createModel([
+            'join a room',
+            'and',
+            'pick a file'
+        ].join('\n'), 'txt')
+        const e = monaco.editor.create(
+            document.getElementById('container'),
+            { model: m }
+        )
+
+        // set up global editor
+        editor.model = m
+        editor.editor = e
     })
 
     return editor

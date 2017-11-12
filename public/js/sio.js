@@ -27,6 +27,7 @@ SIO = (() => {
         SIO.requestId = Date.now(); 
         var fileName = document.getElementById("file").value;
         console.log(`Retrieving ${fileName}`);
+        Editor.resetFile(fileName)
         socket.emit('retrieve_file', {
             name: fileName, requestId: SIO.requestId
         })
