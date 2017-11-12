@@ -3,11 +3,12 @@ const sync = require('../src/sync')
 const util = require('util')
 const exec = util.promisify(require('child_process').exec)
 const readFile = util.promisify(require('fs').readFile)
+const haiku = new (require('haikunator'))
 
 const url    = process.env['URL'] || 'https://nodeist-colony.herokuapp.com/'
 const REPO_DIR = `/tmp/nodeist-${Date.now()}`
 
-const ROOM = process.env['ROOM'] || `room-${Date.now()}`
+const ROOM = process.env['ROOM'] || haiku.haikunate()
 const RESET = process.env['RESET'] === 'true'
 
 const socket = require('socket.io-client')(url)
