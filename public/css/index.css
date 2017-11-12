@@ -32,6 +32,9 @@ body button:hover {
 .features {
     font-family: courier;
     padding: 3px;
+    width: 50%;
+    margin-left: auto;
+    margin-right: auto;
 }
 .features li {
     font-size: 1em;
@@ -46,15 +49,6 @@ h2 {
 h3 {
     color: pink;
     font-family: courier;
-}
-#intro {
-  height: 100%;
-}
-#intro-inner {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
 }
 #room-chooser {
 }
