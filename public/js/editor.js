@@ -133,6 +133,7 @@ Editor = (() => {
                         Languages[ext] = language.id
                     })
                 })
+                monaco.editor.setTheme('vs-dark')
 
                     // initialize monaco editor
                 const m = monaco.editor.createModel([
@@ -144,6 +145,7 @@ Editor = (() => {
                         document.getElementById('container'),
                         { model: m }
                     )
+
 
                     // set up global editor
                 editor.model = m

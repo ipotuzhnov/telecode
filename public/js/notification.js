@@ -11,14 +11,13 @@ Notifications = (() => {
 
         static pushTestNotification (content) {
             Notifications.push(
-                'Node knockout project says',
-                content,
-                '../img/' + 'happy' + '_head.png'
+                'Telecode says',
+                content
             )
         }
 
-        static push (title, body, icon) {
-            const n = new Notification(title, { body, icon })
+        static push (title, body) {
+            const n = new Notification(title, { body })
             n.onclick = function(event) {
                 const diffDiv = document.getElementById("diff");
                 document.getElementById("diff").style.display="block";
