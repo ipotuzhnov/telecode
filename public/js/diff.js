@@ -17,10 +17,7 @@ GitDiff = (() => {
             return Diff2Html.getJsonFromDiff(gitDiff)
         }
         static getPrettyHtmlFromDiff (gitDiff) {
-            console.log(`html getting dif ${gitDiff}`);
-            
             const output =  Diff2Html.getPrettyHtmlFromDiff(gitDiff);
-            console.log(`html output ${output}`);
             const date = new Date();
             const daysDiff = date_diff_indays(now, date) 
             const when = daysDiff === 0 ? `today at ${

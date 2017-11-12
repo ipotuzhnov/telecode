@@ -29,6 +29,10 @@ async function start () {
                 rooms[room].gitters[socket.id] = socket.id
             }
 
+            socket.on('disconnect', () => {
+                delete rooms[room].gitters[socket.id]
+            })
+
             socket.join(room)
 
             socket.on('reset', () => {
@@ -54,12 +58,38 @@ async function start () {
             // socket.to(id).emit('my message', msg);
             socket.on('retrieve_file', data => {
                 // data = { requestId, name }
-                socket.broadcast.to(room).emit('retrieve_file', data)
-                console.log(`Emitting file after retrieval request ${JSON.stringify(data)}`)
+                // pick a gitter
+                const gitters = Object.keys(rooms[room].gitters)
+                if (gitters.length === 0) {
+                    return socket.broadcast.to(room).emit('file_retrieved', {
+                        requestId: data.requestId,
+                        name: data.name,
+                        context: 'No gitters available!',
+                    })
+                }
+
+                // ask just one gitter for the file
+                const gitter = gitters[0]
+                socket.to(gitter).emit('retrieve_file', data)
+                console.log(`Retrieving file ${data.name} from gitter ${gitter}`)
             })
             socket.on('file_changed', data => {
-                console.log("file changed" + JSON.stringify(data));
-                socket.broadcast.to(room).emit('file_changed', data);                
+                // data = { name, content }
+                // pick a gitter
+                const gitters = Object.keys(rooms[room].gitters)
+                if (gitters.length === 0) {
+                    return socket.broadcast.to(room).emit('file_retrieved', {
+                        requestId: data.requestId,
+                        name: data.name,
+                        context: 'No gitters available!',
+                    })
+                }
+
+                // ask just one gitter to apply the change
+                const gitter = gitters[0]
+                console.log('file changed', JSON.stringify(data))
+                socket.to(gitter).emit('file_changed', data)
+                console.log(`Applying changes ${data.name} on gitter ${gitter}`)
             })
             socket.emit('joined')
         })

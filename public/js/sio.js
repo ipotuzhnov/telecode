@@ -2,12 +2,13 @@
 SIO = (() => {
     const url = location.origin
     const SIO = { socket: null }
-    SIO.requestId = Date.now();
+    // SIO.requestId = Date.now();
     
     const socket = io(url);
     SIO.socket = socket;
     $(function () {
         SIO.socket.on("connect", function () {
+            SIO.requestId = socket.id
             console.log('connected')
         })
         // SIO.socket.on('change', function(msg){
@@ -27,7 +28,6 @@ SIO = (() => {
     }
 
     SIO.retrieveFile = function () {
-        SIO.requestId = Date.now(); 
         var fileName = document.getElementById("file").value;
         console.log(`Retrieving ${fileName}`);
         Editor.resetFile(fileName);
@@ -38,12 +38,16 @@ SIO = (() => {
 
     SIO.sendFile = function () {
         const file = Editor.getFile();
-        console.log(`Sending file ${JSON.stringify(file)}`);
+        console.log(`Sending file ${file.name} with request id ${SIO.requestId})}`);
         if (!file.name || !file.content) {
             console.log("error on file send");
             return;
         }
-        socket.emit("file_changed", file);
+        socket.emit("file_changed", {
+            name: file.name,
+            content: file.content,
+            requestId: SIO.requestId
+        })
     }
 
     return SIO

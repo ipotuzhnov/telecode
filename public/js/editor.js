@@ -54,9 +54,8 @@ Editor = (() => {
 
         applyDiff (diffs) {
             console.log(`applyDiff ${this.fileName}`)
-            console.log(diffs)
             const diff = diffs.find(d => d.oldName === this.fileName)
-            console.log('found', diff)
+            console.log('found diff')
             if (!diff) return
             
             const blocks = diff.blocks
@@ -65,7 +64,6 @@ Editor = (() => {
 
         applyDiffBlock (block) {
             const changes = block.lines.reduce((c, line) => {
-                console.log('changes', c)
                 if (line.type === DELETE) c[DELETE].push({
                     number: line.oldNumber,
                 })
@@ -75,7 +73,6 @@ Editor = (() => {
                 })
                 return c
             }, { [DELETE]: [], [INSERT]: [] })
-            console.log('all changes', changes)
             changes[DELETE].reverse().map(line => this.removeLine(line.number))
             changes[INSERT].map(line => this.insertLine(line.number, line.content))
         }
@@ -94,7 +91,7 @@ Editor = (() => {
     require.config({ paths: { 'vs': '/node_modules/monaco-editor/min/vs' }})
 
     SIO.socket.on('file_retrieved', data => {
-        console.log('file_retrieved', data)
+        console.log(`file_retrieved ${data.name} for ${data.requestId} (my request id ${SIO.requestId})}`)
         const requestId = SIO.requestId;
         const fileName = data.name
 
@@ -103,13 +100,14 @@ Editor = (() => {
 
         if (data.requestId !== requestId) {
             console.log('not my foo')
+            return
         }
 
         editor.setContent(data)
     })
 
     SIO.socket.on('change', data => {
-        console.log('got change', data)
+        console.log('got change')
         const diff = GitDiff.getJSONFromDiff(data.diff)
         GitDiff.getPrettyHtmlFromDiff(data.diff);
         editor.applyDiff(diff);
