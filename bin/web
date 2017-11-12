@@ -22,6 +22,10 @@ async function start () {
         console.log(`${socket.id} connected`)
         connectedSockets[socket.id] = socket
         
+        socket.on('commit', data => {
+            console.log('got commit', data)
+            io.emit('change', data)
+        })
         socket.on('retrieve_file', async (data, callback) => {
             let file
             let error
