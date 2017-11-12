@@ -6,12 +6,7 @@ GitDiff = (() => {
     //console.log(`htmlString ${htmlString}`)
     class GitDiff {
         static getJSONFromDiff (gitDiff) {
-            
-            console.log(`getting dif ${gitDiff}`);
-            
-            const output =  Diff2Html.getJsonFromDiff(gitDiff);
-            console.log(`output ${JSON.stringify(output)}`);
-            return output;
+            return Diff2Html.getJsonFromDiff(gitDiff)
         }
     }
 
@@ -51,8 +46,8 @@ index eb93f16..1238995 100644
     "socket.io-client": "2.0.4",
 `
 
-    GitDiff.getJSONFromDiff(gitDiffFile1);
-    GitDiff.getJSONFromDiff(gitDiffFile2);
+    GitDiff.gitDiffFile1 = gitDiffFile1
+    GitDiff.gitDiffFile2 = gitDiffFile2
 
     return GitDiff
 })()
