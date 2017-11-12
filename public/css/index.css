@@ -29,11 +29,22 @@ body button:hover {
     font-family: courier;
 }
 
+.features {
+    font-family: courier;
+    padding: 3px;
+}
+.features li {
+    font-size: 1em;
+    font-family: courier;
+    padding: 3px;
+}
+
 h2 {
-    font-size: 4em;
+    font-size: 3em;
     font-family: courier;
 }
 h3 {
+    color: pink;
     font-family: courier;
 }
 #intro {

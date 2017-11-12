@@ -12,12 +12,21 @@
         <div id="intro-inner">
             <h2>Welcome to Telecode</h2>
             <h3>The world's most advanced real-time collaborative programming experience</h3>
-            <h3>To begin, pick a name for the room to collaborate in:</h3>
+            <h3 style="color: lightgray">To begin, pick a name for your collaboration room</h3>
             <div id="room-chooser" style="display:block">
                 <input placeholder="Name your room" type="text" id="room" name="room" value="peanut"></input>
                 <div>
                     <button onclick="SIO.joinRoom()">Join room!</button>
                 </div>
+            </div>
+            <div style="text-align: left" class="features">
+                <h3> Features: </h3>
+                <ul>
+                    <li> Run the "telecode daemon" on your local machine, so all your collaborators can sync changes in real-time, all using their favorite editors!
+                    <li> Runs on Mac and Linux
+                    <li> Open up the "telecode browser client" to receive push notifications when a collaborator makes a change.
+                    <li> Browser client has syntax highlighting and autocompletion via Visual Studio's "Monaco"
+                </ul>
             </div>
         </div>
     </div>
