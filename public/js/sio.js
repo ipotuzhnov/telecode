@@ -19,6 +19,7 @@ SIO = (() => {
     SIO.joinRoom = function () {
         document.getElementById('intro').display = 'none'
         document.getElementById('content').display = 'block'
+        Editor.init()
         const room = document.getElementById('room').value
         socket.emit('room', { room })
         socket.on('joined', async () => {

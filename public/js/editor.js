@@ -27,7 +27,7 @@ Editor = (() => {
             const oldModel = this.model
             this.model = monaco.editor.createModel(content, lang)
             this.editor.setModel(this.model)
-            document.getElementById("save").style.display="block";
+            document.getElementById('save').style.display='block'
             oldModel.dispose()
         }
 
@@ -81,61 +81,63 @@ Editor = (() => {
             return Languages
         }
         getFile () {
-            return this.model ? {name: this.fileName, content: this.model.getValue()} : {};
+            return this.model ? {name: this.fileName, content: this.model.getValue()} : {}
+        }
+        init () {
+            require.config({ paths: { 'vs': '/node_modules/monaco-editor/min/vs' }})
+
+            SIO.socket.on('file_retrieved', data => {
+                console.log(`file_retrieved ${data.name} for ${data.requestId} (my request id ${SIO.requestId})}`)
+                const requestId = SIO.requestId
+                const fileName = data.name
+
+                if (editor.files[fileName]) return
+                editor.files[fileName] = 'retrieved'
+
+                if (data.requestId !== requestId) {
+                    console.log('not my foo')
+                    return
+                }
+
+                editor.setContent(data)
+            })
+
+            SIO.socket.on('change', data => {
+                console.log('got change')
+                const diff = GitDiff.getJSONFromDiff(data.diff)
+                GitDiff.getPrettyHtmlFromDiff(data.diff)
+                editor.applyDiff(diff)
+            })
+
+            require(['vs/editor/editor.main'], () => {
+                const languages = monaco.languages.getLanguages()
+                languages.forEach(language => {
+                    language.extensions.forEach(ext => {
+                        Languages[ext] = language.id
+                    })
+                })
+
+                    // initialize monaco editor
+                const m = monaco.editor.createModel([
+                    'join a room',
+                    'and',
+                    'pick a file'
+                ].join('\n'), 'txt')
+                const e = monaco.editor.create(
+                        document.getElementById('container'),
+                        { model: m }
+                    )
+
+                    // set up global editor
+                editor.model = m
+                editor.editor = e
+            })
         }
     }
 
     const fileName = 'foo'
     const editor = new Editor(fileName)
 
-    require.config({ paths: { 'vs': '/node_modules/monaco-editor/min/vs' }})
-
-    SIO.socket.on('file_retrieved', data => {
-        console.log(`file_retrieved ${data.name} for ${data.requestId} (my request id ${SIO.requestId})}`)
-        const requestId = SIO.requestId;
-        const fileName = data.name
-
-        if (editor.files[fileName]) return
-        editor.files[fileName] = 'retrieved'
-
-        if (data.requestId !== requestId) {
-            console.log('not my foo')
-            return
-        }
-
-        editor.setContent(data)
-    })
-
-    SIO.socket.on('change', data => {
-        console.log('got change')
-        const diff = GitDiff.getJSONFromDiff(data.diff)
-        GitDiff.getPrettyHtmlFromDiff(data.diff);
-        editor.applyDiff(diff);
-    })
-
-    require(['vs/editor/editor.main'], () => {
-        const languages = monaco.languages.getLanguages()
-        languages.forEach(language => {
-            language.extensions.forEach(ext => {
-                Languages[ext] = language.id
-            })
-        })
-
-        // initialize monaco editor
-        const m = monaco.editor.createModel([
-            'join a room',
-            'and',
-            'pick a file'
-        ].join('\n'), 'txt')
-        const e = monaco.editor.create(
-            document.getElementById('container'),
-            { model: m }
-        )
-
-        // set up global editor
-        editor.model = m
-        editor.editor = e
-    })
 
     return editor
 })()
