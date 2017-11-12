@@ -17,6 +17,11 @@ GitDiff = (() => {
             return Diff2Html.getJsonFromDiff(gitDiff)
         }
         static getPrettyHtmlFromDiff (gitDiff) {
+            const jsonDiff = Diff2Html.getJsonFromDiff(gitDiff)
+            if (jsonDiff && jsonDiff.length === 0) {
+                console.log("no diff to notify about");
+                return;
+            }
             const output =  Diff2Html.getPrettyHtmlFromDiff(gitDiff)
             const date = new Date()
             const daysDiff = date_diff_indays(now, date)
