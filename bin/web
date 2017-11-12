@@ -6,13 +6,11 @@ const app       = express()
 const http      = require('http').Server(app)
 const io        = require('socket.io')(http)
 const path      = require('path')
-const DB        = require('../src/db')
 
 const DIR = path.resolve(process.env.DIR || `/tmp/nodeist-colony-${Date.now()}`)
 
 const sessions = {}
 async function start () {
-    const db = DB({dir: DIR})
     console.log(`Initializing database in directory ${DIR}`)
     const connectedSockets = {}
     
@@ -23,7 +21,7 @@ async function start () {
         socket.on('room', name => {
             socket.on('reset', () => {
                 sessions[name] = []
-                socket.emit('reset')
+                io.to(name).emit('reset')
             })
             socket.join(name)
             if (!sessions[name]) {
