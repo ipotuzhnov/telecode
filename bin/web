@@ -44,6 +44,9 @@ async function start () {
                 // data = { requestId, name, content }
                 socket.broadcast.to(name).emit('file_retrieved', data)
             })
+            socket.on('file_changed', data => {
+                console.log("file changed" + JSON.stringify(data));
+            })
             socket.emit('joined')
         })
     })

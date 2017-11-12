@@ -27,6 +27,7 @@ Editor = (() => {
             const oldModel = this.model
             this.model = monaco.editor.createModel(content, lang)
             this.editor.setModel(this.model)
+            document.getElementById("save").style.display="block";
             oldModel.dispose()
         }
 
@@ -81,6 +82,11 @@ Editor = (() => {
 
         Languages () {
             return Languages
+        }
+        getValue () {
+            console.log('in getvalue')
+            //return this.editor ? null : this.editor.getValue();
+            return this.model ? this.model.getValue() : null;
         }
     }
 

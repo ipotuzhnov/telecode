@@ -6,24 +6,26 @@
 </head>
 <body>
 
-<h2>Hello Ethel and Ilia! And Conner, someday.</h2>
-
 <div>
-    <label for="room">Choose a room to join: </label>
-    <input type="text" id="room" name="room" value="peanut">
-  </div>
-  <div>
-    <button onclick="SIO.joinRoom()">Submit</button>
-  </div>
+	<h2>Welcome to collaborative coding!</h2>
+	<h4>~Presented to you by the nodeist-colony team~</h4>
 </div>
 
-<div>
+<div id="room-chooser" style="display:block">
+    <label for="room">Choose a room to join: </label>
+	<input type="text" id="room" name="room" value="peanut"></input>
+	<button onclick="SIO.joinRoom()">Submit</button>
+</div>
+
+<div id="file-chooser" style="display:none">
+	<h3 id="room-message"></h3>
     <label for="file">Choose a file to view: </label>
-    <input type="text" id="file" name="file" value="public/index.html">
-  </div>
-  <div>
-    <button onclick="SIO.retrieveFile()">Submit</button>
-  </div>
+	<input type="text" id="file" name="file" value="public/index.html"></input>
+	<button onclick="SIO.retrieveFile()">Submit</button>
+</div>
+
+<div id="save" style="display:none"> 
+	<button onclick="SIO.sendFile()">Save Changes</button>
 </div>
 
 <ul id="messages"></ul>
