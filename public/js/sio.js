@@ -17,8 +17,8 @@ SIO = (() => {
     })
 
     SIO.joinRoom = function () {
-        document.getElementById('intro').display = 'none'
-        document.getElementById('content').display = 'block'
+        document.getElementById('intro').style.display = 'none'
+        document.getElementById('content').style.display = 'block'
         Editor.init()
         const room = document.getElementById('room').value
         socket.emit('room', { room })
